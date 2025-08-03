@@ -151,13 +151,13 @@ export default function AmbassadorDirectorySimple() {
                 {ambassador.verified && (
                   <Badge className="bg-green-100 text-green-800 border-green-200">
                     <CheckCircle className="w-4 h-4 mr-1" />
-                    Verified Ambassador
+                    {t('ambassador.verified-ambassador')}
                   </Badge>
                 )}
-                <Badge variant="secondary">Community Favorite</Badge>
+                <Badge variant="secondary">{t('ambassador.community-favorite')}</Badge>
                 {ambassador.country && (
                   <Badge variant="secondary">
-                    {ambassador.country} Expert
+                    {ambassador.country} {t('ambassador.expert')}
                   </Badge>
                 )}
               </div>
@@ -167,9 +167,9 @@ export default function AmbassadorDirectorySimple() {
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <MapPin className="w-5 h-5 text-[#003366]" />
-                    <span className="font-semibold text-lg">{businesses.length} Businesses</span>
+                    <span className="font-semibold text-lg">{businesses.length} {t('ambassador.businesses-stat')}</span>
                   </div>
-                  <p className="text-gray-600">Trusted local providers</p>
+                  <p className="text-gray-600">{t('ambassador.trusted-providers')}</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">

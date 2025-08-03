@@ -35,6 +35,11 @@ const translations = {
     'ambassador.no-businesses-desc': "This ambassador hasn't added any business recommendations to their list yet. Check back soon!",
     'ambassador.businesses-found': 'businesses found',
     'ambassador.reviews': 'reviews',
+    'ambassador.trusted-providers': 'Trusted local providers',
+    'ambassador.verified-ambassador': 'Verified Ambassador',
+    'ambassador.community-favorite': 'Community Favorite',
+    'ambassador.expert': 'Expert',
+    'ambassador.businesses-stat': 'Businesses',
     
     // Footer
     'footer.powered-by': 'Powered by',
@@ -66,6 +71,11 @@ const translations = {
     'ambassador.no-businesses-desc': 'Este embajador aún no ha agregado recomendaciones de negocios a su lista. ¡Vuelve pronto!',
     'ambassador.businesses-found': 'negocios encontrados',
     'ambassador.reviews': 'reseñas',
+    'ambassador.trusted-providers': 'Proveedores locales de confianza',
+    'ambassador.verified-ambassador': 'Embajador Verificado',
+    'ambassador.community-favorite': 'Favorito de la Comunidad',
+    'ambassador.expert': 'Experto',
+    'ambassador.businesses-stat': 'Negocios',
     
     // Footer
     'footer.powered-by': 'Desarrollado por',
@@ -97,6 +107,11 @@ const translations = {
     'ambassador.no-businesses-desc': 'Este embaixador ainda não adicionou recomendações de negócios à sua lista. Volte em breve!',
     'ambassador.businesses-found': 'negócios encontrados',
     'ambassador.reviews': 'avaliações',
+    'ambassador.trusted-providers': 'Prestadores locais confiáveis',
+    'ambassador.verified-ambassador': 'Embaixador Verificado',
+    'ambassador.community-favorite': 'Favorito da Comunidade',
+    'ambassador.expert': 'Especialista',
+    'ambassador.businesses-stat': 'Negócios',
     
     // Footer
     'footer.powered-by': 'Desenvolvido por',
