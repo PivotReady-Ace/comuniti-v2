@@ -53,22 +53,22 @@ export function Home() {
           </div>
           
           {/* Call-to-Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 border border-gray-200">
+          <div className="space-y-4 max-w-2xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg p-4 hover:shadow-2xl transition-all duration-300 border border-gray-200">
               <Button 
                 onClick={handleInfluencerClick}
-                className="w-full py-8 text-lg font-semibold bg-[#F1762E] hover:bg-[#F1762E]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#F1762E]/30 rounded-xl"
+                className="w-full py-6 text-sm sm:text-base md:text-lg font-semibold bg-[#F1762E] hover:bg-[#F1762E]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#F1762E]/30 rounded-xl leading-tight"
               >
-                {t('home.influencer-btn')}
+                <span className="px-2">{t('home.influencer-btn')}</span>
               </Button>
             </div>
             
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 border border-gray-200">
+            <div className="bg-white rounded-xl shadow-lg p-4 hover:shadow-2xl transition-all duration-300 border border-gray-200">
               <Button 
                 onClick={handleBusinessClick}
-                className="w-full py-8 text-lg font-semibold bg-[#008080] hover:bg-[#008080]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#008080]/30 rounded-xl"
+                className="w-full py-6 text-sm sm:text-base md:text-lg font-semibold bg-[#008080] hover:bg-[#008080]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#008080]/30 rounded-xl leading-tight"
               >
-                {t('home.business-btn')}
+                <span className="px-2">{t('home.business-btn')}</span>
               </Button>
             </div>
           </div>
