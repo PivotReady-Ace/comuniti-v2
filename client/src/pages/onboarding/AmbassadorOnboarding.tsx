@@ -14,7 +14,7 @@ const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
   followerCount: z.coerce.number().min(0, "Follower count must be 0 or greater"),
   country: z.string().min(1, "Please select your country"),
-  email: z.string().optional(),
+  email: z.string().email("Please enter a valid email").or(z.literal("")),
 });
 
 type FormData = z.infer<typeof formSchema>;
