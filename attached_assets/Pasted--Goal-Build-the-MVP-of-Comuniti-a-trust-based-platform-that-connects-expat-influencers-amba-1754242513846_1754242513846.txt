@@ -1,0 +1,61 @@
+🎯 **Goal**: Build the MVP of Comuniti, a trust-based platform that connects expat influencers (ambassadors) with recommended service providers in global relocation hubs.
+
+🧱 **Tech Stack**
+- React (with Vite)
+- Tailwind CSS (with custom config for Comuniti branding)
+- Supabase (PostgreSQL + auth)
+- Language support: English (default), with future localization for Spanish and Portuguese
+
+📁 **Folder Structure**
+- `/src`
+  - `/components` → shared UI components (e.g., `BusinessCard`, `RatingStars`)
+  - `/pages` → routed views (`Home.jsx`, `Onboarding.jsx`, `Directory.jsx`)
+  - `/layouts` → shared wrappers
+  - `/context` → for global app state and language
+  - `/utils` → helper functions
+  - `/assets` → logos and images
+
+🎨 **Brand Design**
+- Font: Maven Pro 600
+- Colors:
+  - Primary: `#003366` (Deep Blue), `#FFFFFF` (White)
+  - Accents:  
+    - Orange: `#F1762E`  
+    - Yellow: `#F1D337`  
+    - Teal: `#008080`  
+    - Cyan: `#27C7D9`  
+    - Red: `#F23030`
+
+🖼️ **Logo**
+- Use `/assets/Comuniti_Transparent Logo.png` as the primary logo for dark backgrounds
+- Include a grayscale version for watermark-style headers or printed reports
+
+📌 **Initial Pages**
+1. `Home.jsx`
+   - Welcome screen asking: _“Are you an Influencer or a Business?”_ (Two buttons)
+   - Comuniti logo centered with tagline
+
+2. `AmbassadorOnboarding.jsx`
+   - Step 1: Platform + follower count + country  
+   - Step 2: If qualified, start list-building (business name, WhatsApp, optional map)  
+   - Step 3: Upload ambassador logo + name their public page
+
+3. `AmbassadorDirectory.jsx`
+   - Public shareable list of businesses recommended by ambassador  
+   - Styled with Comuniti colors and layout
+
+🗃️ **Supabase Tables (recommended schema)**
+- `ambassadors`: id, name, platform, follower_count, country, logo_url
+- `businesses`: id, name, category, whatsapp, location, verified
+- `lists`: ambassador_id, business_id
+- `reviews`: id, business_id, identity_tag, rating, feedback
+- `referrals`: ambassador_id, business_id, timestamp
+
+📦 **Tailwind Setup**
+- Custom `tailwind.config.js` using provided brand colors
+- Import `@fontsource/maven-pro` at root level
+- Typography plugin recommended for review formatting
+
+💡 Bonus:
+- Add language selector to nav (`EN | ES | PT`) for future readiness
+- Set up Replit secrets for Supabase anon/public keys
