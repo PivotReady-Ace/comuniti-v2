@@ -106,8 +106,8 @@ export function AmbassadorBranding() {
       }
 
       // Get business data from previous step
-      const storedBusinessData = localStorage.getItem('selectedBusinesses');
-      const businessIds = storedBusinessData ? JSON.parse(storedBusinessData).map((b: any) => b.id) : [];
+      const storedBusinessData = localStorage.getItem('ambassadorBusinesses');
+      const businessData = storedBusinessData ? JSON.parse(storedBusinessData) : [];
 
       // Create ambassador profile for API using correct schema fields
       const ambassadorData = {
@@ -122,8 +122,34 @@ export function AmbassadorBranding() {
       };
 
       console.log('Creating ambassador profile:', ambassadorData);
+      console.log('Business data to create:', businessData);
 
-      // Save to database via API
+      // First create businesses from form data
+      const createdBusinessIds = [];
+      for (const business of businessData) {
+        const businessPayload = {
+          name: business.businessName,
+          category: business.categories.join(', '), // Join multiple categories
+          whatsapp: business.whatsappNumber,
+          location: business.businessAddress || 'Address not provided',
+          description: `Contact: ${business.contactPerson}${business.email ? ` (${business.email})` : ''}`,
+        };
+
+        const businessResponse = await fetch('/api/businesses', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(businessPayload),
+        });
+
+        if (businessResponse.ok) {
+          const createdBusiness = await businessResponse.json();
+          createdBusinessIds.push(createdBusiness.id);
+        }
+      }
+
+      // Save ambassador to database via API
       const response = await fetch('/api/ambassadors', {
         method: 'POST',
         headers: {
@@ -131,7 +157,7 @@ export function AmbassadorBranding() {
         },
         body: JSON.stringify({
           ambassador: ambassadorData,
-          businessIds: businessIds,
+          businessIds: createdBusinessIds,
         }),
       });
 
