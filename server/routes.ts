@@ -11,6 +11,16 @@ const createAmbassadorRequestSchema = z.object({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Ambassador routes
+  app.get("/api/ambassadors", async (req, res) => {
+    try {
+      const ambassadors = await storage.getAllAmbassadors();
+      res.json(ambassadors);
+    } catch (error) {
+      console.error("Error fetching ambassadors:", error);
+      res.status(500).json({ error: "Failed to fetch ambassadors" });
+    }
+  });
+
   app.post("/api/ambassadors", async (req, res) => {
     try {
       const { ambassador: ambassadorData, businessIds } = createAmbassadorRequestSchema.parse(req.body);
@@ -69,6 +79,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Business routes
+  app.get("/api/businesses", async (req, res) => {
+    try {
+      const businesses = await storage.getAllBusinesses();
+      res.json(businesses);
+    } catch (error) {
+      console.error("Error fetching businesses:", error);
+      res.status(500).json({ error: "Failed to fetch businesses" });
+    }
+  });
+
   app.post("/api/businesses", async (req, res) => {
     try {
       const businessData = insertBusinessSchema.parse(req.body);
@@ -123,6 +143,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating referral:", error);
       res.status(500).json({ error: "Failed to create referral" });
+    }
+  });
+
+  // Test endpoint to create sample data for testing
+  app.post("/api/test/create-sample-data", async (req, res) => {
+    try {
+      // Create sample ambassador
+      const ambassador = await storage.createAmbassador({
+        name: "Mike Johnson",
+        platform: "YouTube",
+        followerCount: 25000,
+        country: "PA",
+        logoUrl: null,
+        pageName: "Mike's Panama Network",
+        pageUrl: "mikes-panama-network",
+        bio: "Helping Black families relocate to Panama since 2021"
+      });
+
+      // Create sample businesses
+      const business1 = await storage.createBusiness({
+        name: "Rodriguez Immigration Law",
+        category: "Immigration Lawyer",
+        whatsapp: "50765551234",
+        location: "Panama City",
+        description: "Expert immigration services for expats moving to Panama"
+      });
+
+      const business2 = await storage.createBusiness({
+        name: "Panama Relocation Services",
+        category: "Personal Relocation Consultant",
+        whatsapp: "50765554567",
+        location: "David",
+        description: "Complete relocation assistance for families and individuals"
+      });
+
+      // Link businesses to ambassador
+      await storage.addBusinessToAmbassador({
+        ambassadorId: ambassador.id,
+        businessId: business1.id,
+      });
+
+      await storage.addBusinessToAmbassador({
+        ambassadorId: ambassador.id,
+        businessId: business2.id,
+      });
+
+      res.json({ 
+        message: "Sample data created successfully",
+        ambassador,
+        businesses: [business1, business2]
+      });
+    } catch (error) {
+      console.error("Error creating sample data:", error);
+      res.status(500).json({ error: "Failed to create sample data" });
     }
   });
 

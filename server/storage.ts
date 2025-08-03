@@ -25,11 +25,13 @@ import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Ambassador operations
+  getAllAmbassadors(): Promise<Ambassador[]>;
   getAmbassador(id: string): Promise<Ambassador | undefined>;
   getAmbassadorByPageUrl(pageUrl: string): Promise<Ambassador | undefined>;
   createAmbassador(ambassador: InsertAmbassador): Promise<Ambassador>;
   
   // Business operations
+  getAllBusinesses(): Promise<Business[]>;
   getBusiness(id: string): Promise<Business | undefined>;
   createBusiness(business: InsertBusiness): Promise<Business>;
   getBusinessesByAmbassador(ambassadorId: string): Promise<Business[]>;
@@ -55,6 +57,10 @@ export class MemStorage implements IStorage {
   private referrals: Map<string, Referral> = new Map();
 
   // Ambassador operations
+  async getAllAmbassadors(): Promise<Ambassador[]> {
+    return Array.from(this.ambassadors.values());
+  }
+
   async getAmbassador(id: string): Promise<Ambassador | undefined> {
     return this.ambassadors.get(id);
   }
@@ -70,8 +76,8 @@ export class MemStorage implements IStorage {
     const ambassador: Ambassador = {
       ...insertAmbassador,
       id,
-      profileImageUrl: insertAmbassador.profileImageUrl || null,
-      tagline: insertAmbassador.tagline || null,
+      logoUrl: insertAmbassador.logoUrl || null,
+      bio: insertAmbassador.bio || null,
       verified: false,
       createdAt: new Date(),
     };
@@ -80,6 +86,10 @@ export class MemStorage implements IStorage {
   }
 
   // Business operations
+  async getAllBusinesses(): Promise<Business[]> {
+    return Array.from(this.businesses.values());
+  }
+
   async getBusiness(id: string): Promise<Business | undefined> {
     return this.businesses.get(id);
   }
@@ -89,13 +99,8 @@ export class MemStorage implements IStorage {
     const business: Business = {
       ...insertBusiness,
       id,
-      email: insertBusiness.email || null,
       description: insertBusiness.description || null,
       verified: false,
-      rating: 0,
-      reviewCount: 0,
-      serviceTags: insertBusiness.serviceTags || null,
-      recentlyAdded: true,
       createdAt: new Date(),
     };
     this.businesses.set(id, business);
@@ -186,6 +191,11 @@ export class DatabaseStorage implements IStorage {
   );
 
   // Ambassador operations
+  async getAllAmbassadors(): Promise<Ambassador[]> {
+    const result = await this.db.select().from(ambassadors);
+    return result;
+  }
+
   async getAmbassador(id: string): Promise<Ambassador | undefined> {
     const results = await this.db.select().from(ambassadors).where(eq(ambassadors.id, id));
     return results[0];
@@ -202,6 +212,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Business operations
+  async getAllBusinesses(): Promise<Business[]> {
+    const result = await this.db.select().from(businesses);
+    return result;
+  }
+
   async getBusiness(id: string): Promise<Business | undefined> {
     const results = await this.db.select().from(businesses).where(eq(businesses.id, id));
     return results[0];
@@ -219,14 +234,9 @@ export class DatabaseStorage implements IStorage {
         name: businesses.name,
         category: businesses.category,
         whatsapp: businesses.whatsapp,
-        email: businesses.email,
-        city: businesses.city,
+        location: businesses.location,
         description: businesses.description,
         verified: businesses.verified,
-        rating: businesses.rating,
-        reviewCount: businesses.reviewCount,
-        serviceTags: businesses.serviceTags,
-        recentlyAdded: businesses.recentlyAdded,
         createdAt: businesses.createdAt,
       })
       .from(businesses)
