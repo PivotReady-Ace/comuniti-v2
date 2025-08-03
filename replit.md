@@ -11,14 +11,16 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 3, 2025:**
-- Created AmbassadorListBuilder component for Step 2 of onboarding flow
-- Added multi-business recommendation form with 28 predefined service categories
-- Fixed form validation issue on AmbassadorOnboarding preventing Continue button functionality
+- Created AmbassadorAccount component for user registration with Supabase authentication
+- Integrated real Supabase signup using user's provided credentials (SUPABASE_URL, SUPABASE_ANON_KEY)
+- Updated onboarding flow: Home → AmbassadorOnboarding → AmbassadorAccount → AmbassadorListBuilder
+- Added WhatsApp number validation to accept international format (numbers only, no symbols)
+- Implemented profile image upload with preview functionality
+- Enhanced business recommendation form with proper email and category validation
+- Fixed form navigation between onboarding steps
+- Successfully tested account creation with real Supabase authentication
 - Updated country dropdown to focus on Latin American destinations (Panama, Colombia, Portugal, Costa Rica)
-- Implemented collapsible business cards with dynamic add/remove functionality
 - Applied consistent orange accent color (#F1762E) to all primary action buttons
-- Added official Comuniti logo to `/public/assets/comuniti-logo.png`
-- Updated Home page to use official branding instead of placeholder logo
 
 ## System Architecture
 
@@ -48,10 +50,11 @@ Preferred communication style: Simple, everyday language.
   - `referrals` - tracking ambassador-business referral relationships
 
 ### Authentication and Authorization
-- Currently using basic trust-based system without formal authentication
+- **Supabase Authentication**: Integrated real user signup and authentication
+- User accounts created with email/password through Supabase auth system
 - Ambassador verification status tracked via boolean flags
 - Business verification managed through admin approval workflow
-- Future integration planned for OAuth or custom authentication system
+- User sessions managed through Supabase with automatic token handling
 
 ## External Dependencies
 
