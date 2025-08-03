@@ -18,7 +18,7 @@ export function Home() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img 
-            src="/assets/Comuniti_Transparent%20Logo.png" 
+            src="/assets/comuniti-logo.png" 
             alt="Comuniti" 
             className="h-14 w-auto"
           />
