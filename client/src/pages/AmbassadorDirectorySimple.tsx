@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Globe, MessageCircle, User, MapPin, Phone, Star, Users, Filter, X } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { AuthButton } from '@/components/AuthButton';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface Ambassador {
@@ -90,12 +91,27 @@ export default function AmbassadorDirectorySimple() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <div className="bg-white shadow-sm border-b relative">
-        {/* Language Selector */}
-        <div className="absolute top-4 right-6">
-          <LanguageSelector />
+      {/* Header */}
+      <header className="bg-[#003366] shadow-xl">
+        <div className="container mx-auto px-6 py-4 max-w-7xl">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <img 
+                src="/assets/Original-Logo.svg" 
+                alt="Comuniti" 
+                className="h-16 w-auto"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <AuthButton />
+              <LanguageSelector />
+            </div>
+          </div>
         </div>
+      </header>
+
+      {/* Ambassador Profile Section */}
+      <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-6 py-8 max-w-7xl">
           <div className="flex flex-col lg:flex-row lg:items-start gap-6">
             {/* Profile Image */}

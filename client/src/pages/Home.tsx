@@ -1,6 +1,7 @@
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { AuthButton } from '@/components/AuthButton';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function Home() {
@@ -28,7 +29,10 @@ export function Home() {
                 className="h-20 w-auto"
               />
             </div>
-            <LanguageSelector />
+            <div className="flex items-center gap-4">
+              <AuthButton />
+              <LanguageSelector />
+            </div>
           </div>
         </div>
       </header>
