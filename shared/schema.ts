@@ -5,14 +5,16 @@ import { z } from "zod";
 
 export const ambassadors = pgTable("ambassadors", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  whatsapp: text("whatsapp").notNull(),
   platform: text("platform").notNull(),
   followerCount: integer("follower_count").notNull(),
   country: text("country").notNull(),
-  logoUrl: text("logo_url"),
-  pageName: text("page_name").notNull(),
+  profileImageUrl: text("profile_image_url"),
+  listName: text("list_name").notNull(),
   pageUrl: text("page_url").notNull().unique(),
-  bio: text("bio"),
+  tagline: text("tagline"),
   verified: boolean("verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -22,9 +24,14 @@ export const businesses = pgTable("businesses", {
   name: text("name").notNull(),
   category: text("category").notNull(),
   whatsapp: text("whatsapp").notNull(),
-  location: text("location"),
+  email: text("email"),
+  city: text("city").notNull(),
   description: text("description"),
   verified: boolean("verified").default(false),
+  rating: integer("rating").default(0),
+  reviewCount: integer("review_count").default(0),
+  serviceTags: text("service_tags").array(),
+  recentlyAdded: boolean("recently_added").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

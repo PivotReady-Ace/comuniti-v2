@@ -14,6 +14,7 @@ import { Loader2, Upload, User, ArrowLeft } from 'lucide-react';
 
 const formSchema = z.object({
   listName: z.string().min(5, 'List name must be at least 5 characters'),
+  tagline: z.string().min(10, 'Tagline must be at least 10 characters').optional(),
   profileImage: z.any().optional(),
 });
 
@@ -40,6 +41,7 @@ export function AmbassadorBranding() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       listName: '',
+      tagline: '',
     },
   });
 
@@ -85,22 +87,49 @@ export function AmbassadorBranding() {
         imageUrl = imagePreview;
       }
 
-      // Create ambassador profile in database
+      // Get business data from previous step
+      const storedBusinessData = localStorage.getItem('selectedBusinesses');
+      const businessIds = storedBusinessData ? JSON.parse(storedBusinessData).map((b: any) => b.id) : [];
+
+      // Create ambassador profile for API
       const ambassadorData = {
-        id: userData.id,
         email: userData.email,
-        full_name: userData.fullName || '',
-        list_name: data.listName,
-        slug: slug,
-        profile_image_url: imageUrl,
-        created_at: new Date().toISOString(),
+        fullName: userData.fullName || '',
+        whatsapp: userData.whatsapp || '',
+        platform: userData.platform || 'Instagram',
+        followerCount: userData.followerCount || 0,
+        country: userData.country || '',
+        listName: data.listName,
+        pageUrl: slug,
+        tagline: data.tagline || '',
+        profileImageUrl: imageUrl,
       };
 
       console.log('Creating ambassador profile:', ambassadorData);
 
-      // TODO: Save to Supabase database table
-      // For now, store in localStorage for demo purposes
-      localStorage.setItem('ambassadorProfile', JSON.stringify(ambassadorData));
+      // Save to database via API
+      const response = await fetch('/api/ambassadors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ambassador: ambassadorData,
+          businessIds: businessIds,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create ambassador profile');
+      }
+
+      const createdAmbassador = await response.json();
+      console.log('Ambassador profile created:', createdAmbassador);
+
+      // Clear stored data
+      localStorage.removeItem('ambassadorUser');
+      localStorage.removeItem('selectedBusinesses');
 
       // Navigate to the public directory page
       setLocation(`/directory/${slug}`);
@@ -201,6 +230,27 @@ export function AmbassadorBranding() {
                             Your URL will be: comuniti.com/directory/{previewSlug}
                           </p>
                         )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Tagline Field */}
+                  <FormField
+                    control={form.control}
+                    name="tagline"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tagline (optional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Helping expats find trusted local services" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <p className="text-sm text-gray-500">
+                          A short description that will appear under your name on your public page.
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}

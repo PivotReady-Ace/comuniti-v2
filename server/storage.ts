@@ -69,8 +69,8 @@ export class MemStorage implements IStorage {
     const ambassador: Ambassador = {
       ...insertAmbassador,
       id,
-      logoUrl: insertAmbassador.logoUrl || null,
-      bio: insertAmbassador.bio || null,
+      profileImageUrl: insertAmbassador.profileImageUrl || null,
+      tagline: insertAmbassador.tagline || null,
       verified: false,
       createdAt: new Date(),
     };
@@ -88,9 +88,13 @@ export class MemStorage implements IStorage {
     const business: Business = {
       ...insertBusiness,
       id,
-      location: insertBusiness.location || null,
+      email: insertBusiness.email || null,
       description: insertBusiness.description || null,
       verified: false,
+      rating: 0,
+      reviewCount: 0,
+      serviceTags: insertBusiness.serviceTags || null,
+      recentlyAdded: true,
       createdAt: new Date(),
     };
     this.businesses.set(id, business);
@@ -205,9 +209,14 @@ export class DatabaseStorage implements IStorage {
         name: businesses.name,
         category: businesses.category,
         whatsapp: businesses.whatsapp,
-        location: businesses.location,
+        email: businesses.email,
+        city: businesses.city,
         description: businesses.description,
         verified: businesses.verified,
+        rating: businesses.rating,
+        reviewCount: businesses.reviewCount,
+        serviceTags: businesses.serviceTags,
+        recentlyAdded: businesses.recentlyAdded,
         createdAt: businesses.createdAt,
       })
       .from(businesses)
