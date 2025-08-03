@@ -1,0 +1,131 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { insertAmbassadorSchema, insertBusinessSchema, insertAmbassadorBusinessSchema } from "@shared/schema";
+import { z } from "zod";
+
+const createAmbassadorRequestSchema = z.object({
+  ambassador: insertAmbassadorSchema,
+  businessIds: z.array(z.string()),
+});
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Ambassador routes
+  app.post("/api/ambassadors", async (req, res) => {
+    try {
+      const { ambassador: ambassadorData, businessIds } = createAmbassadorRequestSchema.parse(req.body);
+      
+      // Create the ambassador
+      const ambassador = await storage.createAmbassador(ambassadorData);
+      
+      // Link businesses to ambassador
+      for (const businessId of businessIds) {
+        await storage.addBusinessToAmbassador({
+          ambassadorId: ambassador.id,
+          businessId,
+        });
+      }
+      
+      res.json(ambassador);
+    } catch (error) {
+      console.error("Error creating ambassador:", error);
+      res.status(400).json({ 
+        error: error instanceof Error ? error.message : "Failed to create ambassador" 
+      });
+    }
+  });
+
+  app.get("/api/ambassadors/:pageUrl", async (req, res) => {
+    try {
+      const { pageUrl } = req.params;
+      const ambassador = await storage.getAmbassadorByPageUrl(pageUrl);
+      
+      if (!ambassador) {
+        return res.status(404).json({ error: "Ambassador not found" });
+      }
+      
+      res.json(ambassador);
+    } catch (error) {
+      console.error("Error fetching ambassador:", error);
+      res.status(500).json({ error: "Failed to fetch ambassador" });
+    }
+  });
+
+  app.get("/api/ambassadors/:pageUrl/businesses", async (req, res) => {
+    try {
+      const { pageUrl } = req.params;
+      const ambassador = await storage.getAmbassadorByPageUrl(pageUrl);
+      
+      if (!ambassador) {
+        return res.status(404).json({ error: "Ambassador not found" });
+      }
+      
+      const businesses = await storage.getBusinessesByAmbassador(ambassador.id);
+      res.json(businesses);
+    } catch (error) {
+      console.error("Error fetching ambassador businesses:", error);
+      res.status(500).json({ error: "Failed to fetch businesses" });
+    }
+  });
+
+  // Business routes
+  app.post("/api/businesses", async (req, res) => {
+    try {
+      const businessData = insertBusinessSchema.parse(req.body);
+      const business = await storage.createBusiness(businessData);
+      res.json(business);
+    } catch (error) {
+      console.error("Error creating business:", error);
+      res.status(400).json({ 
+        error: error instanceof Error ? error.message : "Failed to create business" 
+      });
+    }
+  });
+
+  app.get("/api/businesses/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const business = await storage.getBusiness(id);
+      
+      if (!business) {
+        return res.status(404).json({ error: "Business not found" });
+      }
+      
+      res.json(business);
+    } catch (error) {
+      console.error("Error fetching business:", error);
+      res.status(500).json({ error: "Failed to fetch business" });
+    }
+  });
+
+  // Review routes
+  app.get("/api/businesses/:id/reviews", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const reviews = await storage.getReviewsByBusiness(id);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ error: "Failed to fetch reviews" });
+    }
+  });
+
+  // Referral tracking (for future analytics)
+  app.post("/api/referrals", async (req, res) => {
+    try {
+      const referralData = {
+        ambassadorId: req.body.ambassadorId,
+        businessId: req.body.businessId,
+      };
+      
+      const referral = await storage.createReferral(referralData);
+      res.json(referral);
+    } catch (error) {
+      console.error("Error creating referral:", error);
+      res.status(500).json({ error: "Failed to create referral" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
