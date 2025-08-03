@@ -48,10 +48,9 @@ const businessSchema = z.object({
   businessName: z.string().min(1, 'Business name is required'),
   contactPerson: z.string().optional(),
   email: z.string().email('Please enter a valid email address'),
-  whatsappNumber: z.string().min(1, 'WhatsApp number is required').regex(
-    /^\+[1-9]\d{1,14}$/,
-    'Please enter a valid WhatsApp number with country code (e.g., +1234567890)'
-  ),
+  whatsappNumber: z.string().regex(/^[1-9][0-9]{7,14}$/, {
+    message: 'Enter a valid number in international format (no +, spaces, or symbols).',
+  }),
   businessAddress: z.string().optional(),
   categories: z.array(z.string()).min(1, 'Please select at least one category'),
 });
@@ -233,10 +232,18 @@ export function AmbassadorListBuilder() {
                           name={`businesses.${index}.whatsappNumber`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>WhatsApp Number *</FormLabel>
+                              <FormLabel>WhatsApp Number (include country code, numbers only) *</FormLabel>
                               <FormControl>
-                                <Input placeholder="+1234567890" {...field} />
+                                <Input 
+                                  type="tel"
+                                  inputMode="numeric"
+                                  placeholder="50761234567" 
+                                  {...field} 
+                                />
                               </FormControl>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Use numbers only — no +, spaces, or symbols.
+                              </p>
                               <FormMessage />
                             </FormItem>
                           )}
