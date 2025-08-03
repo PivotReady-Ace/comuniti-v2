@@ -17,33 +17,25 @@ interface Business {
   id: string;
   name: string;
   category: string;
-  rating: number;
-  reviewCount: number;
-  city: string;
   whatsapp: string;
+  location: string;
+  description: string | null;
   verified: boolean;
-  referrers: string[];
-  serviceTags?: ServiceTag[];
-  identityReviews?: {
-    count: number;
-    identity: string;
-  };
-  recentlyAdded?: boolean;
+  createdAt: string;
 }
 
 interface AmbassadorProfile {
   id: string;
-  listName: string;
-  slug: string;
-  fullName: string;
-  profileImageUrl?: string;
-  tagline: string;
-  rating: number;
-  reviewCount: number;
-  cities: string[];
-  businessCount: number;
-  referralCount: number;
+  name: string;
+  platform: string;
+  followerCount: number;
+  country: string;
+  logoUrl: string | null;
+  pageName: string;
+  pageUrl: string;
+  bio: string | null;
   verified: boolean;
+  createdAt: string;
 }
 
 // Mock data based on your example
@@ -589,53 +581,14 @@ export default function AmbassadorDirectory() {
       
       const ambassadorData = await ambassadorResponse.json();
       
-      // Transform to expected format
-      const transformedProfile: AmbassadorProfile = {
-        id: ambassadorData.id,
-        listName: ambassadorData.listName,
-        slug: ambassadorData.pageUrl,
-        fullName: ambassadorData.fullName,
-        profileImageUrl: ambassadorData.profileImageUrl,
-        tagline: ambassadorData.tagline || 'Helping expats find trusted local services',
-        rating: 4.9, // TODO: Calculate actual rating
-        reviewCount: 247, // TODO: Calculate actual review count
-        cities: [ambassadorData.country], // TODO: Parse from businesses
-        businessCount: 0, // Will be updated when businesses load
-        referralCount: 1200, // TODO: Calculate actual referrals
-        verified: ambassadorData.verified,
-      };
-      
-      setProfile(transformedProfile);
+      // Use the actual data structure from the API
+      setProfile(ambassadorData);
       
       // Fetch businesses for this ambassador
       const businessResponse = await fetch(`/api/ambassadors/${pageUrl}/businesses`);
       if (businessResponse.ok) {
         const businessData = await businessResponse.json();
-        
-        // Transform businesses to expected format
-        const transformedBusinesses: Business[] = businessData.map((business: any) => ({
-          id: business.id,
-          name: business.name,
-          category: business.category,
-          rating: business.rating || 4.5,
-          reviewCount: business.reviewCount || 10,
-          city: business.city,
-          whatsapp: business.whatsapp,
-          verified: business.verified,
-          referrers: [ambassadorData.fullName], // Ambassador is the referrer
-          serviceTags: business.serviceTags ? business.serviceTags.map((tag: string) => ({
-            type: 'service' as const,
-            label: tag,
-            icon: <Globe className="w-3 h-3" />,
-            color: 'primary' as const,
-          })) : [],
-          recentlyAdded: business.recentlyAdded,
-        }));
-        
-        setBusinesses(transformedBusinesses);
-        
-        // Update profile with actual business count
-        setProfile(prev => prev ? { ...prev, businessCount: transformedBusinesses.length } : null);
+        setBusinesses(businessData);
       }
       
     } catch (error) {

@@ -9,7 +9,7 @@ import { AmbassadorOnboarding } from "@/pages/onboarding/AmbassadorOnboarding";
 import { AmbassadorAccount } from "@/pages/onboarding/AmbassadorAccount";
 import { AmbassadorListBuilder } from "@/pages/onboarding/AmbassadorListBuilder";
 import { AmbassadorBranding } from "@/pages/onboarding/AmbassadorBranding";
-import AmbassadorDirectory from "@/pages/AmbassadorDirectory";
+import AmbassadorDirectorySimple from "@/pages/AmbassadorDirectorySimple";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,7 +21,7 @@ function Router() {
       <Route path="/onboarding/ambassador/account" component={AmbassadorAccount} />
       <Route path="/onboarding/ambassador/list-builder" component={AmbassadorListBuilder} />
       <Route path="/onboarding/ambassador/branding" component={AmbassadorBranding} />
-      <Route path="/directory/:pageUrl" component={AmbassadorDirectory} />
+      <Route path="/directory/:pageUrl" component={AmbassadorDirectorySimple} />
       <Route component={NotFound} />
     </Switch>
   );
