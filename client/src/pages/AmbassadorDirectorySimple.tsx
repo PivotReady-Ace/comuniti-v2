@@ -94,7 +94,7 @@ export default function AmbassadorDirectorySimple() {
             {/* Profile Image */}
             <div className="flex-shrink-0">
               <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#003366] to-[#F1762E] flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
-                {ambassador.logo_url ? (
+                {ambassador.logo_url && ambassador.logo_url !== 'https://example.com/aaron-avatar.jpg' ? (
                   <img 
                     src={ambassador.logo_url} 
                     alt={ambassador.name} 
@@ -108,8 +108,8 @@ export default function AmbassadorDirectorySimple() {
                     }}
                   />
                 ) : null}
-                <span className="text-white text-4xl font-bold" style={{display: ambassador.logo_url ? 'none' : 'flex'}}>
-                  {ambassador.name.split(' ').map((n: string) => n[0]).join('')}
+                <span className="text-white text-4xl font-bold flex items-center justify-center w-full h-full" style={{display: (ambassador.logo_url && ambassador.logo_url !== 'https://example.com/aaron-avatar.jpg') ? 'none' : 'flex'}}>
+                  {ambassador.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                 </span>
               </div>
             </div>
