@@ -20,7 +20,7 @@ const translations = {
     'home.subtitle': 'Are you an influencer or a service provider?',
     'home.cta': 'Find Recommendations',
     'home.influencer-btn': "I'm an Influencer or Content Creator",
-    'home.business-btn': "I'm a Business that Offers Services",
+    'home.business-btn': "I'm a Business Owner that offers Products or Services",
     
     // Ambassador page
     'ambassador.verified': 'Verified Ambassador',
@@ -56,7 +56,7 @@ const translations = {
     'home.subtitle': '¿Eres un influencer o un proveedor de servicios?',
     'home.cta': 'Encontrar Recomendaciones',
     'home.influencer-btn': 'Soy un Influencer o Creador de Contenido',
-    'home.business-btn': 'Soy un Negocio que Ofrece Servicios',
+    'home.business-btn': 'Soy Propietario de un Negocio que ofrece Productos o Servicios',
     
     // Ambassador page
     'ambassador.verified': 'Embajador Verificado',
@@ -92,7 +92,7 @@ const translations = {
     'home.subtitle': 'Você é um influenciador ou um prestador de serviços?',
     'home.cta': 'Encontrar Recomendações',
     'home.influencer-btn': 'Sou um Influenciador ou Criador de Conteúdo',
-    'home.business-btn': 'Sou um Negócio que Oferece Serviços',
+    'home.business-btn': 'Sou Proprietário de um Negócio que oferece Produtos ou Serviços',
     
     // Ambassador page
     'ambassador.verified': 'Embaixador Verificado',
