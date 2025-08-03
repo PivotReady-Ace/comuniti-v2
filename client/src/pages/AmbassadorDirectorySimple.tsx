@@ -264,14 +264,24 @@ export default function AmbassadorDirectorySimple() {
                         </span>
                       </div>
                       
-                      <Button 
-                        size="sm" 
-                        className="w-full bg-[#F1762E] hover:bg-[#F1762E]/90 text-white mt-4"
-                        onClick={() => window.open(formatWhatsApp(business.whatsapp), '_blank')}
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Contact via WhatsApp
-                      </Button>
+                      <div className="flex gap-3 mt-4">
+                        <Button 
+                          size="sm" 
+                          className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white"
+                          onClick={() => window.open(formatWhatsApp(business.whatsapp), '_blank')}
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          WhatsApp
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className="flex-1 bg-[#003366] hover:bg-[#003366]/90 text-white"
+                          onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(business.location)}`, '_blank')}
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          View Map
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
