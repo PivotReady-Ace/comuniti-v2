@@ -36,7 +36,7 @@ const countries = [
   { value: 'ar', label: 'Argentina' },
   { value: 'pa', label: 'Panama' },
   { value: 'co', label: 'Colombia' },
-  { value: 'pt', label: 'Portugal (Lisbon)' },
+  { value: 'pt', label: 'Portugal' },
   { value: 'cr', label: 'Costa Rica' },
 ];
 
