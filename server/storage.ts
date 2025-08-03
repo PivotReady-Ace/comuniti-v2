@@ -11,8 +11,9 @@ import type {
   InsertReferral
 } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { createClient } from "@supabase/supabase-js";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { 
   ambassadors, 
   businesses, 
@@ -171,9 +172,18 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Database storage implementation
+// Database storage implementation using Supabase
 export class DatabaseStorage implements IStorage {
-  private db = drizzle(neon(process.env.DATABASE_URL!));
+  private supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!
+  );
+  private db = drizzle(
+    postgres(process.env.DATABASE_URL!, { 
+      max: 1,
+      ssl: 'require'
+    })
+  );
 
   // Ambassador operations
   async getAmbassador(id: string): Promise<Ambassador | undefined> {
