@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Globe, MessageCircle, User, MapPin, Phone, Star, Users, Filter, X } from 'lucide-react';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Ambassador {
   id: string;
@@ -32,6 +34,7 @@ interface Business {
 
 export default function AmbassadorDirectorySimple() {
   const [match, params] = useRoute('/directory/:pageUrl');
+  const { t } = useLanguage();
 
   // Use React Query to prevent infinite loops
   const { data: ambassador, isLoading: ambassadorLoading, error: ambassadorError } = useQuery({
@@ -88,7 +91,11 @@ export default function AmbassadorDirectorySimple() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b relative">
+        {/* Language Selector */}
+        <div className="absolute top-4 right-6">
+          <LanguageSelector />
+        </div>
         <div className="container mx-auto px-6 py-8 max-w-7xl">
           <div className="flex flex-col lg:flex-row lg:items-start gap-6">
             {/* Profile Image */}
@@ -169,14 +176,14 @@ export default function AmbassadorDirectorySimple() {
                     <Users className="w-5 h-5 text-[#003366]" />
                     <span className="font-semibold text-lg">1,200+</span>
                   </div>
-                  <p className="text-gray-600">Successful referrals</p>
+                  <p className="text-gray-600">{t('ambassador.referrals')}</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Globe className="w-5 h-5 text-[#003366]" />
                     <span className="font-semibold text-lg">{ambassador.platform}</span>
                   </div>
-                  <p className="text-gray-600">({ambassador.followerCount.toLocaleString()} followers)</p>
+                  <p className="text-gray-600">({ambassador.followerCount.toLocaleString()} {t('ambassador.followers')})</p>
                 </div>
               </div>
             </div>
@@ -191,7 +198,7 @@ export default function AmbassadorDirectorySimple() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-[#003366]">
-              Trusted Service Providers
+              {t('ambassador.businesses')}
             </h2>
             <div className="text-gray-600">
               {businesses.length} businesses found
@@ -218,10 +225,11 @@ export default function AmbassadorDirectorySimple() {
                         <CardTitle className="text-xl text-[#003366] mb-1">{business.name}</CardTitle>
                         <p className="text-[#F1762E] font-medium">{business.category}</p>
                       </div>
-                      {business.verified && (
+                      {/* MVP: Only show verified badge for businesses that actually sign up and pay */}
+                      {false && business.verified && (
                         <Badge className="bg-green-100 text-green-800 border-green-200 ml-2">
                           <CheckCircle className="w-4 h-4 mr-1" />
-                          Verified
+                          {t('ambassador.verified-business')}
                         </Badge>
                       )}
                     </div>
@@ -260,7 +268,7 @@ export default function AmbassadorDirectorySimple() {
                       <div className="flex items-center gap-2 text-sm">
                         <Users className="w-4 h-4 text-[#003366]" />
                         <span className="text-gray-600">
-                          Referred by <span className="font-semibold text-[#003366]">{ambassador.name}</span>
+                          {t('ambassador.referred-by')} <span className="font-semibold text-[#003366]">{ambassador.name}</span>
                         </span>
                       </div>
                       
@@ -271,7 +279,7 @@ export default function AmbassadorDirectorySimple() {
                           onClick={() => window.open(formatWhatsApp(business.whatsapp), '_blank')}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
-                          WhatsApp
+                          {t('ambassador.whatsapp')}
                         </Button>
                         <Button 
                           size="sm" 
@@ -279,7 +287,7 @@ export default function AmbassadorDirectorySimple() {
                           onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(business.location)}`, '_blank')}
                         >
                           <MapPin className="w-4 h-4 mr-2" />
-                          View Map
+                          {t('ambassador.view-map')}
                         </Button>
                       </div>
                     </div>
@@ -296,7 +304,7 @@ export default function AmbassadorDirectorySimple() {
         <div className="container mx-auto px-6 py-8 max-w-7xl">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-gray-500 text-sm">Powered by</span>
+              <span className="text-gray-500 text-sm">{t('footer.powered-by')}</span>
               <img 
                 src="/attached_assets/Comuniti_Transparent Logo_1754244988005.png"
                 alt="Comuniti"
@@ -304,7 +312,7 @@ export default function AmbassadorDirectorySimple() {
               />
             </div>
             <p className="text-xs text-gray-400">
-              Connecting expat influencers with trusted service providers worldwide
+              {t('footer.tagline')}
             </p>
           </div>
         </div>

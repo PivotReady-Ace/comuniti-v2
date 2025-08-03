@@ -11,6 +11,11 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 3, 2025:**
+- **MVP Language Features**: Implemented complete multi-language support (EN/ES/PT) with language selector in upper right of landing and ambassador pages
+- **Social Media Integration**: Added follower count input fields during ambassador onboarding (platform selection, manual follower count input, country/region selection)
+- **Business Verification Logic**: Only businesses that sign up and pay receive verified badges; ambassador-added businesses remain unverified for MVP
+- **Translation System**: Full Spanish and Portuguese translations for all major UI elements and pages
+- **Onboarding Enhancement**: Extended ambassador account creation with platform, follower count, and country fields for complete profile setup
 - Fixed major onboarding completion issue: resolved database schema mismatch and payload size errors
 - Updated TypeScript schema to match actual Supabase database columns (name, platform, followerCount, etc.)
 - Increased JSON payload limits to 50mb to handle image uploads

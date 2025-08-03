@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User } from 'lucide-react';
 
@@ -16,6 +17,9 @@ const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   fullName: z.string().optional(),
+  platform: z.string().min(1, 'Please select a platform'),
+  followerCount: z.string().min(1, 'Please enter your follower count'),
+  country: z.string().min(1, 'Please select your country'),
   profileImage: z.any().optional(),
 });
 
@@ -34,6 +38,9 @@ export function AmbassadorAccount() {
       email: '',
       password: '',
       fullName: '',
+      platform: '',
+      followerCount: '',
+      country: '',
     },
   });
 
@@ -80,6 +87,9 @@ export function AmbassadorAccount() {
         id: authData.user.id,
         email: data.email,
         fullName: data.fullName,
+        platform: data.platform,
+        followerCount: parseInt(data.followerCount) || 0,
+        country: data.country,
         profileImage: imagePreview,
         createdAt: new Date().toISOString(),
       };
@@ -180,10 +190,86 @@ export function AmbassadorAccount() {
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Your full name (optional)" 
+                          placeholder="Your full name" 
                           {...field} 
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Platform Field */}
+                <FormField
+                  control={form.control}
+                  name="platform"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Primary Social Media Platform *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your main platform" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Instagram">Instagram</SelectItem>
+                          <SelectItem value="TikTok">TikTok</SelectItem>
+                          <SelectItem value="YouTube">YouTube</SelectItem>
+                          <SelectItem value="Facebook">Facebook</SelectItem>
+                          <SelectItem value="Twitter">Twitter/X</SelectItem>
+                          <SelectItem value="LinkedIn">LinkedIn</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Follower Count Field */}
+                <FormField
+                  control={form.control}
+                  name="followerCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Follower Count *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number"
+                          placeholder="e.g. 10000" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <p className="text-sm text-gray-500">Enter your current follower count on your main platform</p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Country Field */}
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country/Region of Expertise *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your location expertise" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Panama">Panama</SelectItem>
+                          <SelectItem value="Costa Rica">Costa Rica</SelectItem>
+                          <SelectItem value="Mexico">Mexico</SelectItem>
+                          <SelectItem value="Portugal">Portugal</SelectItem>
+                          <SelectItem value="Spain">Spain</SelectItem>
+                          <SelectItem value="UAE">UAE</SelectItem>
+                          <SelectItem value="Thailand">Thailand</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
