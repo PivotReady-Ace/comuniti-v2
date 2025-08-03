@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
-  followerCount: z.coerce.number().min(1, "Follower count must be greater than 0"),
+  followerCount: z.coerce.number().min(0, "Follower count must be 0 or greater"),
   country: z.string().min(1, "Please select your country"),
   email: z.string().email("Please enter a valid email").optional(),
 });
@@ -49,13 +49,16 @@ export function AmbassadorOnboarding() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       platforms: [],
-      followerCount: 0,
+      followerCount: 1,
       country: '',
       email: '',
     },
   });
 
   const onSubmit = (data: FormData) => {
+    console.log('Form submitted with data:', data);
+    console.log('Form errors:', form.formState.errors);
+    
     const minFollowerRequirement = 1; // Very low for MVP
 
     if (data.followerCount >= minFollowerRequirement) {
@@ -66,6 +69,7 @@ export function AmbassadorOnboarding() {
         country: data.country,
       }));
       
+      console.log('Navigating to list-builder...');
       setLocation('/onboarding/ambassador/list-builder');
     } else {
       setShowEmailPrompt(true);
