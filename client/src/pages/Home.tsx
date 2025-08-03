@@ -23,7 +23,7 @@ export function Home() {
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img 
-                src="/attached_assets/Comuniti_Transparent Logo_1754244988005.png" 
+                src="/assets/Original-Logo.svg" 
                 alt="Comuniti" 
                 className="h-20 w-auto"
               />

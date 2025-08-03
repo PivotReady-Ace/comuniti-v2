@@ -12,10 +12,10 @@ export function LanguageSelector() {
   ];
 
   return (
-    <div className="flex items-center gap-2">
-      <Globe className="w-4 h-4 text-gray-600" />
+    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
+      <Globe className="w-4 h-4 text-white" />
       <Select value={language} onValueChange={(value: 'en' | 'es' | 'pt') => setLanguage(value)}>
-        <SelectTrigger className="w-16 h-8 border-0 bg-transparent text-sm">
+        <SelectTrigger className="w-16 h-8 border-0 bg-transparent text-sm text-white font-medium">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
