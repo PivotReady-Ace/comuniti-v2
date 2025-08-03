@@ -8,6 +8,13 @@ Comuniti is a trust-based platform that connects expat influencers (ambassadors)
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**January 3, 2025:**
+- Added official Comuniti logo to `/public/assets/comuniti-logo.png`
+- Updated Home page to use official branding instead of placeholder logo
+- Logo now displays in main header and footer sections
+
 ## System Architecture
 
 ### Frontend Architecture

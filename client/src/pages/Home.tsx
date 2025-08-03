@@ -37,8 +37,12 @@ export default function Home() {
       <main className="gradient-comuniti-primary">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
-            <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <span className="text-white font-bold text-4xl">C</span>
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/assets/comuniti-logo.png" 
+                alt="Comuniti" 
+                className="h-24 w-auto drop-shadow-lg"
+              />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
               {t('home.title')}
@@ -96,10 +100,11 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-2">
-                  <span className="text-white font-bold">C</span>
-                </div>
-                <span className="text-xl font-bold">Comuniti</span>
+                <img 
+                  src="/assets/comuniti-logo.png" 
+                  alt="Comuniti" 
+                  className="h-8 w-auto mr-2"
+                />
               </div>
               <p className="text-white/80 text-sm">
                 Connecting expat communities worldwide through trusted recommendations.
