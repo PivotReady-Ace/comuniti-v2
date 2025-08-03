@@ -14,7 +14,7 @@ const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
   followerCount: z.coerce.number().min(0, "Follower count must be 0 or greater"),
   country: z.string().min(1, "Please select your country"),
-  email: z.string().email("Please enter a valid email").optional(),
+  email: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -56,9 +56,6 @@ export function AmbassadorOnboarding() {
   });
 
   const onSubmit = (data: FormData) => {
-    console.log('Form submitted with data:', data);
-    console.log('Form errors:', form.formState.errors);
-    
     const minFollowerRequirement = 1; // Very low for MVP
 
     if (data.followerCount >= minFollowerRequirement) {
@@ -69,7 +66,6 @@ export function AmbassadorOnboarding() {
         country: data.country,
       }));
       
-      console.log('Navigating to list-builder...');
       setLocation('/onboarding/ambassador/list-builder');
     } else {
       setShowEmailPrompt(true);
@@ -273,21 +269,7 @@ export function AmbassadorOnboarding() {
                   >
                     Back
                   </Button>
-                  <Button 
-                    type="button"
-                    className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white"
-                    onClick={() => {
-                      console.log('Continue button clicked');
-                      const values = form.getValues();
-                      console.log('Current form values:', values);
-                      console.log('Form errors:', form.formState.errors);
-                      console.log('Form is valid:', form.formState.isValid);
-                      
-                      // Try navigation regardless of validation for testing
-                      console.log('Attempting navigation...');
-                      setLocation('/onboarding/ambassador/list-builder');
-                    }}
-                  >
+                  <Button type="submit" className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white">
                     Continue
                   </Button>
                 </div>
