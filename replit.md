@@ -27,6 +27,9 @@ Preferred communication style: Simple, everyday language.
 - Implemented professional footer with grayscale Comuniti logo
 - Verified single database instance working correctly with consistent data
 - Completed dual-button business card template: WhatsApp (orange) and Google Maps (teal) buttons with equal sizing
+- Fixed onboarding flow to properly capture detailed business addresses in database location field
+- Implemented Supabase storage for ambassador photo uploads with proper error handling
+- Updated WhatsApp number field to correct value (50763226180) and specific Torre Global Bank address
 
 ## System Architecture
 

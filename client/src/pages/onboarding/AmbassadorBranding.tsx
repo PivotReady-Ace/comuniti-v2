@@ -96,13 +96,43 @@ export function AmbassadorBranding() {
         throw new Error('List name must create a valid URL slug (at least 3 characters after processing)');
       }
 
-      // Handle image upload more efficiently 
+      // Handle image upload to Supabase storage
       let imageUrl = null;
       if (selectedImage) {
-        console.log('Image upload would happen here:', selectedImage.name);
-        // For now, skip the large base64 data to avoid payload errors
-        // TODO: Implement proper image upload to Supabase storage
-        imageUrl = null; // Skip image for now to avoid payload size issues
+        try {
+          const fileExt = selectedImage.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `ambassador-logos/${fileName}`;
+
+          const { data, error } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, selectedImage, {
+              cacheControl: '3600',
+              upsert: false
+            });
+
+          if (error) {
+            console.error('Image upload error:', error);
+            if (error.message.includes('The resource was not found')) {
+              setSubmitError('Storage bucket not found. Please create an "avatars" bucket in your Supabase storage dashboard.');
+            } else {
+              setSubmitError(`Failed to upload image: ${error.message}`);
+            }
+            return;
+          }
+
+          // Get public URL for the uploaded image
+          const { data: publicUrlData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+          imageUrl = publicUrlData.publicUrl;
+          console.log('Image uploaded successfully:', imageUrl);
+        } catch (error) {
+          console.error('Image upload error:', error);
+          setSubmitError('Failed to upload image. Please try again.');
+          return;
+        }
       }
 
       // Get business data from previous step
