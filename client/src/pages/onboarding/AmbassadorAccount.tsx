@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocation } from 'wouter';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,19 +54,30 @@ export function AmbassadorAccount() {
     setSignupError(null);
 
     try {
-      // TODO: Integrate with Supabase when available
-      // For now, simulate account creation
-      console.log('Creating account for:', { 
-        email: data.email, 
-        fullName: data.fullName,
-        hasProfileImage: !!selectedImage 
+      // Create account with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: data.fullName || '',
+          }
+        }
       });
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (authError) {
+        throw authError;
+      }
 
-      // Store user data temporarily (replace with proper auth context later)
+      if (!authData.user) {
+        throw new Error('Failed to create user account');
+      }
+
+      console.log('Successfully created account for:', data.email);
+
+      // Store user data temporarily for the onboarding flow
       const userData = {
+        id: authData.user.id,
         email: data.email,
         fullName: data.fullName,
         profileImage: imagePreview,
@@ -81,12 +93,14 @@ export function AmbassadorAccount() {
       console.error('Signup error:', error);
       
       // Handle specific Supabase errors
-      if (error?.message?.includes('already registered')) {
+      if (error?.message?.includes('already registered') || error?.message?.includes('User already registered')) {
         setSignupError('An account with this email already exists. Please use a different email or sign in instead.');
-      } else if (error?.message?.includes('weak password')) {
-        setSignupError('Password is too weak. Please choose a stronger password.');
+      } else if (error?.message?.includes('Password should be at least')) {
+        setSignupError('Password is too weak. Please choose a stronger password with at least 6 characters.');
+      } else if (error?.message?.includes('Invalid email')) {
+        setSignupError('Please enter a valid email address.');
       } else {
-        setSignupError('Failed to create account. Please try again.');
+        setSignupError(error?.message || 'Failed to create account. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
