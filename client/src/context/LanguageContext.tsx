@@ -24,15 +24,17 @@ const translations = {
     
     // Ambassador page
     'ambassador.verified': 'Verified Ambassador',
-    'ambassador.businesses': 'Businesses',
+    'ambassador.businesses': 'Trusted Service Providers',
     'ambassador.referrals': 'Successful referrals',
     'ambassador.followers': 'followers',
     'ambassador.referred-by': 'Referred by',
     'ambassador.whatsapp': 'WhatsApp',
     'ambassador.view-map': 'View Map',
     'ambassador.verified-business': 'Verified Business',
-    'ambassador.community-favorite': 'Community Favorite',
-    'ambassador.expert': 'Expert',
+    'ambassador.no-businesses': 'No businesses listed yet',
+    'ambassador.no-businesses-desc': "This ambassador hasn't added any business recommendations to their list yet. Check back soon!",
+    'ambassador.businesses-found': 'businesses found',
+    'ambassador.reviews': 'reviews',
     
     // Footer
     'footer.powered-by': 'Powered by',
@@ -53,15 +55,17 @@ const translations = {
     
     // Ambassador page
     'ambassador.verified': 'Embajador Verificado',
-    'ambassador.businesses': 'Negocios',
+    'ambassador.businesses': 'Proveedores de Servicios de Confianza',
     'ambassador.referrals': 'Referencias exitosas',
     'ambassador.followers': 'seguidores',
     'ambassador.referred-by': 'Recomendado por',
     'ambassador.whatsapp': 'WhatsApp',
     'ambassador.view-map': 'Ver Mapa',
     'ambassador.verified-business': 'Negocio Verificado',
-    'ambassador.community-favorite': 'Favorito de la Comunidad',
-    'ambassador.expert': 'Experto',
+    'ambassador.no-businesses': 'Aún no hay negocios listados',
+    'ambassador.no-businesses-desc': 'Este embajador aún no ha agregado recomendaciones de negocios a su lista. ¡Vuelve pronto!',
+    'ambassador.businesses-found': 'negocios encontrados',
+    'ambassador.reviews': 'reseñas',
     
     // Footer
     'footer.powered-by': 'Desarrollado por',
@@ -82,15 +86,17 @@ const translations = {
     
     // Ambassador page
     'ambassador.verified': 'Embaixador Verificado',
-    'ambassador.businesses': 'Negócios',
+    'ambassador.businesses': 'Prestadores de Serviços Confiáveis',
     'ambassador.referrals': 'Indicações bem-sucedidas',
     'ambassador.followers': 'seguidores',
     'ambassador.referred-by': 'Indicado por',
     'ambassador.whatsapp': 'WhatsApp',
     'ambassador.view-map': 'Ver Mapa',
     'ambassador.verified-business': 'Negócio Verificado',
-    'ambassador.community-favorite': 'Favorito da Comunidade',
-    'ambassador.expert': 'Especialista',
+    'ambassador.no-businesses': 'Nenhum negócio listado ainda',
+    'ambassador.no-businesses-desc': 'Este embaixador ainda não adicionou recomendações de negócios à sua lista. Volte em breve!',
+    'ambassador.businesses-found': 'negócios encontrados',
+    'ambassador.reviews': 'avaliações',
     
     // Footer
     'footer.powered-by': 'Desenvolvido por',

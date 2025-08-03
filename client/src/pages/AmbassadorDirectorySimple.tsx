@@ -201,7 +201,7 @@ export default function AmbassadorDirectorySimple() {
               {t('ambassador.businesses')}
             </h2>
             <div className="text-gray-600">
-              {businesses.length} businesses found
+              {businesses.length} {t('ambassador.businesses-found')}
             </div>
           </div>
 
@@ -210,8 +210,8 @@ export default function AmbassadorDirectorySimple() {
               <CardContent className="p-12 text-center">
                 <div className="max-w-md mx-auto">
                   <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No businesses listed yet</h3>
-                  <p className="text-gray-600">This ambassador hasn't added any business recommendations to their list yet. Check back soon!</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('ambassador.no-businesses')}</h3>
+                  <p className="text-gray-600">{t('ambassador.no-businesses-desc')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -249,7 +249,7 @@ export default function AmbassadorDirectorySimple() {
                         ))}
                       </div>
                       <span className="font-semibold">4.5</span>
-                      <span className="text-gray-500">(12 reviews)</span>
+                      <span className="text-gray-500">(12 {t('ambassador.reviews')})</span>
                     </div>
                   </CardHeader>
                   
