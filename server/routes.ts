@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const createAmbassadorRequestSchema = z.object({
   ambassador: insertAmbassadorSchema,
-  businessIds: z.array(z.string()),
+  businessIds: z.array(z.string()).optional().default([]),
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {

@@ -79,30 +79,29 @@ export function AmbassadorBranding() {
         throw new Error('List name must create a valid URL slug (at least 3 characters after processing)');
       }
 
-      // TODO: Upload image to Supabase storage if selected
+      // Handle image upload more efficiently 
       let imageUrl = null;
       if (selectedImage) {
         console.log('Image upload would happen here:', selectedImage.name);
-        // For now, we'll use the preview URL
-        imageUrl = imagePreview;
+        // For now, skip the large base64 data to avoid payload errors
+        // TODO: Implement proper image upload to Supabase storage
+        imageUrl = null; // Skip image for now to avoid payload size issues
       }
 
       // Get business data from previous step
       const storedBusinessData = localStorage.getItem('selectedBusinesses');
       const businessIds = storedBusinessData ? JSON.parse(storedBusinessData).map((b: any) => b.id) : [];
 
-      // Create ambassador profile for API
+      // Create ambassador profile for API using correct schema fields
       const ambassadorData = {
-        email: userData.email,
-        fullName: userData.fullName || '',
-        whatsapp: userData.whatsapp || '',
+        name: userData.fullName || userData.email?.split('@')[0] || 'Ambassador',
         platform: userData.platform || 'Instagram',
         followerCount: userData.followerCount || 0,
         country: userData.country || '',
-        listName: data.listName,
+        logoUrl: imageUrl,
+        pageName: data.listName,
         pageUrl: slug,
-        tagline: data.tagline || '',
-        profileImageUrl: imageUrl,
+        bio: data.tagline || '',
       };
 
       console.log('Creating ambassador profile:', ambassadorData);
