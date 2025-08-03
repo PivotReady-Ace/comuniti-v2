@@ -66,7 +66,7 @@ export function AmbassadorOnboarding() {
         country: data.country,
       }));
       
-      setLocation('/onboarding/ambassador/list-builder');
+      setLocation('/onboarding/ambassador/account');
     } else {
       setShowEmailPrompt(true);
     }
