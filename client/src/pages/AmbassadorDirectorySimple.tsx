@@ -275,7 +275,7 @@ export default function AmbassadorDirectorySimple() {
                         </Button>
                         <Button 
                           size="sm" 
-                          className="flex-1 bg-[#003366] hover:bg-[#003366]/90 text-white"
+                          className="flex-1 bg-[#008080] hover:bg-[#008080]/90 text-white"
                           onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(business.location)}`, '_blank')}
                         >
                           <MapPin className="w-4 h-4 mr-2" />
