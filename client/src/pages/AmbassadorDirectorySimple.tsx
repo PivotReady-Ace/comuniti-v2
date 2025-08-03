@@ -94,17 +94,23 @@ export default function AmbassadorDirectorySimple() {
             {/* Profile Image */}
             <div className="flex-shrink-0">
               <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#003366] to-[#F1762E] flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
-                {ambassador.logoUrl ? (
+                {ambassador.logo_url ? (
                   <img 
-                    src={ambassador.logoUrl} 
+                    src={ambassador.logo_url} 
                     alt={ambassador.name} 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (nextElement) {
+                        nextElement.style.display = 'flex';
+                      }
+                    }}
                   />
-                ) : (
-                  <span className="text-white text-4xl font-bold">
-                    {ambassador.name.split(' ').map(n => n[0]).join('')}
-                  </span>
-                )}
+                ) : null}
+                <span className="text-white text-4xl font-bold" style={{display: ambassador.logo_url ? 'none' : 'flex'}}>
+                  {ambassador.name.split(' ').map((n: string) => n[0]).join('')}
+                </span>
               </div>
             </div>
 
@@ -204,7 +210,7 @@ export default function AmbassadorDirectorySimple() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {businesses.map((business) => (
+              {businesses.map((business: Business) => (
                 <Card key={business.id} className="bg-white hover:shadow-lg transition-shadow border border-gray-200">
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">
@@ -276,10 +282,20 @@ export default function AmbassadorDirectorySimple() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 mt-16 border-t border-gray-200">
-        <div className="container mx-auto px-6 py-8">
-          <div className="text-center text-gray-600">
-            <p>Powered by Comuniti - Connecting expats with trusted local services</p>
+      <footer className="bg-white border-t border-gray-200 mt-16">
+        <div className="container mx-auto px-6 py-8 max-w-7xl">
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-gray-500 text-sm">Powered by</span>
+              <img 
+                src="/attached_assets/Comuniti_Transparent Logo_1754244988005.png"
+                alt="Comuniti"
+                className="h-6 opacity-50 grayscale hover:opacity-70 transition-opacity"
+              />
+            </div>
+            <p className="text-xs text-gray-400">
+              Connecting expat influencers with trusted service providers worldwide
+            </p>
           </div>
         </div>
       </footer>
