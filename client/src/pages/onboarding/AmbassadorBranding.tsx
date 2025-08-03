@@ -51,6 +51,23 @@ export function AmbassadorBranding() {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Check file size (max 5MB)
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSizeInBytes) {
+        setSubmitError('Image file is too large. Please choose a file smaller than 5MB.');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setSubmitError('Please select a valid image file (JPEG, PNG, or WebP).');
+        event.target.value = ''; // Clear the input
+        return;
+      }
+
+      setSubmitError(null); // Clear any previous errors
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -68,7 +85,7 @@ export function AmbassadorBranding() {
       // Get current user data from localStorage (from previous onboarding steps)
       const storedUserData = localStorage.getItem('ambassadorUser');
       if (!storedUserData) {
-        throw new Error('User data not found. Please restart the onboarding process.');
+        throw new Error('User data not found. Please go back to the onboarding account step to continue.');
       }
 
       const userData = JSON.parse(storedUserData);
@@ -126,9 +143,10 @@ export function AmbassadorBranding() {
       const createdAmbassador = await response.json();
       console.log('Ambassador profile created:', createdAmbassador);
 
-      // Clear stored data
-      localStorage.removeItem('ambassadorUser');
-      localStorage.removeItem('selectedBusinesses');
+      // Keep stored data for potential re-use (don't clear on success)
+      // This allows users to continue from where they left off if needed
+      // localStorage.removeItem('ambassadorUser');
+      // localStorage.removeItem('selectedBusinesses');
 
       // Navigate to the public directory page
       setLocation(`/directory/${slug}`);
@@ -154,6 +172,9 @@ export function AmbassadorBranding() {
           </h1>
           <p className="text-gray-600">
             Complete your profile to create your public recommendation page
+          </p>
+          <p className="text-sm text-[#F1762E] mt-2">
+            Returning to finish your profile? You can continue from here!
           </p>
         </div>
 
@@ -187,7 +208,7 @@ export function AmbassadorBranding() {
                       <div className="flex-1">
                         <input
                           type="file"
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           onChange={handleImageSelect}
                           className="hidden"
                           id="profile-image"
@@ -199,9 +220,12 @@ export function AmbassadorBranding() {
                           <Upload className="w-4 h-4" />
                           {selectedImage ? 'Change Photo' : 'Upload Photo'}
                         </Label>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Max file size: 5MB. Supported formats: JPEG, PNG, WebP
+                        </p>
                         {selectedImage && (
                           <p className="text-sm text-gray-500 mt-1">
-                            {selectedImage.name}
+                            {selectedImage.name} ({(selectedImage.size / 1024 / 1024).toFixed(1)}MB)
                           </p>
                         )}
                       </div>
@@ -334,7 +358,7 @@ export function AmbassadorBranding() {
                 <div className="mt-4 p-3 bg-[#F1762E]/10 border border-[#F1762E]/20 rounded-lg">
                   <p className="text-sm text-[#F1762E] font-medium">
                     <strong>Your shareable URL:</strong><br />
-                    comuniti.com/directory/{previewSlug}
+                    comuniti.co/directory/{previewSlug}
                   </p>
                 </div>
               )}

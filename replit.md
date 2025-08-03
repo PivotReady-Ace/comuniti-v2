@@ -11,15 +11,15 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 3, 2025:**
-- Created AmbassadorAccount component for user registration with Supabase authentication
-- Integrated real Supabase signup using user's provided credentials (SUPABASE_URL, SUPABASE_ANON_KEY)
-- Updated onboarding flow: Home → AmbassadorOnboarding → AmbassadorAccount → AmbassadorListBuilder
-- Added WhatsApp number validation to accept international format (numbers only, no symbols)
-- Implemented profile image upload with preview functionality
-- Enhanced business recommendation form with proper email and category validation
-- Fixed form navigation between onboarding steps
-- Successfully tested account creation with real Supabase authentication
-- Updated country dropdown to focus on Latin American destinations (Panama, Colombia, Portugal, Costa Rica)
+- Fixed major onboarding completion issue: resolved database schema mismatch and payload size errors
+- Updated TypeScript schema to match actual Supabase database columns (name, platform, followerCount, etc.)
+- Increased JSON payload limits to 50mb to handle image uploads
+- Added comprehensive file validation: 5MB size limit, JPEG/PNG/WebP format checking
+- Updated domain references from 'comuniti.com' to 'comuniti.co' throughout the application
+- Improved user experience: users can now continue from branding step without restarting entire onboarding
+- Preserved localStorage data to allow seamless continuation of onboarding process
+- Successfully tested complete ambassador profile creation with real database integration
+- Enhanced error messaging with actionable guidance for users
 - Applied consistent orange accent color (#F1762E) to all primary action buttons
 
 ## System Architecture
