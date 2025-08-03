@@ -30,14 +30,14 @@ const platforms = [
 const countries = [
   { value: 'us', label: 'United States' },
   { value: 'ca', label: 'Canada' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'au', label: 'Australia' },
-  { value: 'de', label: 'Germany' },
   { value: 'fr', label: 'France' },
   { value: 'es', label: 'Spain' },
   { value: 'mx', label: 'Mexico' },
-  { value: 'br', label: 'Brazil' },
   { value: 'ar', label: 'Argentina' },
+  { value: 'pa', label: 'Panama' },
+  { value: 'co', label: 'Colombia' },
+  { value: 'pt', label: 'Portugal (Lisbon)' },
+  { value: 'cr', label: 'Costa Rica' },
 ];
 
 export function AmbassadorOnboarding() {
