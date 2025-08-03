@@ -11,9 +11,14 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 3, 2025:**
+- Created AmbassadorListBuilder component for Step 2 of onboarding flow
+- Added multi-business recommendation form with 28 predefined service categories
+- Fixed form validation issue on AmbassadorOnboarding preventing Continue button functionality
+- Updated country dropdown to focus on Latin American destinations (Panama, Colombia, Portugal, Costa Rica)
+- Implemented collapsible business cards with dynamic add/remove functionality
+- Applied consistent orange accent color (#F1762E) to all primary action buttons
 - Added official Comuniti logo to `/public/assets/comuniti-logo.png`
 - Updated Home page to use official branding instead of placeholder logo
-- Logo now displays in main header and footer sections
 
 ## System Architecture
 
