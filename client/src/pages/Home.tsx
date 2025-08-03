@@ -45,14 +45,14 @@ export function Home() {
         <div className="space-y-4 pt-8">
           <Button 
             onClick={handleInfluencerClick}
-            className="w-full py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-white"
+            className="w-full py-6 text-lg font-semibold bg-[#F1762E] hover:bg-[#F1762E]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#F1762E]/30"
           >
             {t('home.influencer-btn')}
           </Button>
           
           <Button 
             onClick={handleBusinessClick}
-            className="w-full py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-white"
+            className="w-full py-6 text-lg font-semibold bg-[#003366] hover:bg-[#003366]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#003366]/30"
           >
             {t('home.business-btn')}
           </Button>
