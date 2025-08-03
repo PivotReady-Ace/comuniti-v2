@@ -273,7 +273,21 @@ export function AmbassadorOnboarding() {
                   >
                     Back
                   </Button>
-                  <Button type="submit" className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white">
+                  <Button 
+                    type="button"
+                    className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white"
+                    onClick={() => {
+                      console.log('Continue button clicked');
+                      const values = form.getValues();
+                      console.log('Current form values:', values);
+                      console.log('Form errors:', form.formState.errors);
+                      console.log('Form is valid:', form.formState.isValid);
+                      
+                      // Try navigation regardless of validation for testing
+                      console.log('Attempting navigation...');
+                      setLocation('/onboarding/ambassador/list-builder');
+                    }}
+                  >
                     Continue
                   </Button>
                 </div>
