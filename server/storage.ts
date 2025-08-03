@@ -11,8 +11,8 @@ import type {
   InsertReferral
 } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import { 
   ambassadors, 
   businesses, 
@@ -173,7 +173,10 @@ export class MemStorage implements IStorage {
 
 // Database storage implementation
 export class DatabaseStorage implements IStorage {
-  private db = drizzle(neon(process.env.DATABASE_URL!));
+  private pool = new Pool({
+    connectionString: process.env.DATABASE_URL!,
+  });
+  private db = drizzle(this.pool);
 
   // Ambassador operations
   async getAmbassador(id: string): Promise<Ambassador | undefined> {
@@ -262,5 +265,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Use memory storage for development testing, database storage in production
-export const storage = process.env.NODE_ENV === 'production' ? new DatabaseStorage() : new MemStorage();
+// Use database storage when DATABASE_URL is available, memory storage as fallback
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
