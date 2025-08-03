@@ -52,7 +52,7 @@ export function Home() {
           
           <Button 
             onClick={handleBusinessClick}
-            className="w-full py-6 text-lg font-semibold bg-[#003366] hover:bg-[#003366]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#003366]/30"
+            className="w-full py-6 text-lg font-semibold bg-[#008080] hover:bg-[#008080]/90 hover:scale-105 transition-all duration-200 text-white shadow-lg hover:shadow-xl border-2 border-transparent hover:border-[#008080]/30"
           >
             {t('home.business-btn')}
           </Button>
