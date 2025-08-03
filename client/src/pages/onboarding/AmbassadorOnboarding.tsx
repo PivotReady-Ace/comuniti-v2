@@ -132,7 +132,7 @@ export function AmbassadorOnboarding() {
                   )}
                 />
                 <div className="flex gap-3">
-                  <Button type="submit" className="flex-1">
+                  <Button type="submit" className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white">
                     Join Waitlist
                   </Button>
                   <Button 
@@ -269,7 +269,7 @@ export function AmbassadorOnboarding() {
                   >
                     Back
                   </Button>
-                  <Button type="submit" className="flex-1">
+                  <Button type="submit" className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white">
                     Continue
                   </Button>
                 </div>
