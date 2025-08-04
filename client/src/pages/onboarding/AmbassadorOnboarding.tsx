@@ -15,8 +15,8 @@ import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
-  followerCount: z.coerce.number().min(0, "Follower count must be 0 or greater"),
-  email: z.string().email("Please enter a valid email").or(z.literal("")),
+  followerCount: z.coerce.number().min(1, "Follower count must be at least 1"),
+  email: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -45,9 +45,10 @@ export function AmbassadorOnboarding() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       platforms: [],
-      followerCount: 1,
+      followerCount: 1000,
       email: '',
     },
+    mode: 'onChange',
   });
 
   const onSubmit = (data: FormData) => {
@@ -55,9 +56,11 @@ export function AmbassadorOnboarding() {
       platforms: data.platforms,
       followerCount: data.followerCount,
       userData: userData,
-      isCheckingExistingAmbassador
+      isCheckingExistingAmbassador,
+      formErrors: form.formState.errors
     });
 
+    // Prevent default form submission behavior
     const minFollowerRequirement = 1; // Very low for MVP
 
     if (data.followerCount >= minFollowerRequirement) {
@@ -69,14 +72,17 @@ export function AmbassadorOnboarding() {
       
       console.log('✅ Platform data saved, determining next step...');
       
-      // Check if user data already exists (account already created)
-      if (userData?.email && userData?.fullName && userData?.country) {
-        console.log('📍 User data exists, skipping to list builder');
-        setLocation('/onboarding/ambassador/list-builder');
-      } else {
-        console.log('📍 No user data, proceeding to account creation');
-        setLocation('/onboarding/ambassador/account');
-      }
+      // Small delay to ensure state is saved
+      setTimeout(() => {
+        // Check if user data already exists (account already created)
+        if (userData?.email && userData?.fullName && userData?.country) {
+          console.log('📍 User data exists, skipping to list builder');
+          setLocation('/onboarding/ambassador/list-builder');
+        } else {
+          console.log('📍 No user data, proceeding to account creation');
+          setLocation('/onboarding/ambassador/account');
+        }
+      }, 100);
     } else {
       console.log('❌ Follower count below threshold, showing email prompt');
       setShowEmailPrompt(true);
@@ -195,7 +201,14 @@ export function AmbassadorOnboarding() {
         <Card>
           <CardContent className="pt-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form 
+                onSubmit={(e) => {
+                  console.log('📝 Form onSubmit event triggered');
+                  e.preventDefault();
+                  form.handleSubmit(onSubmit)(e);
+                }} 
+                className="space-y-6"
+              >
                 {/* Platform Selection */}
                 <FormField
                   control={form.control}
@@ -251,7 +264,8 @@ export function AmbassadorOnboarding() {
                         <Input 
                           type="number" 
                           placeholder="Enter your follower count"
-                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -271,7 +285,15 @@ export function AmbassadorOnboarding() {
                   >
                     Back
                   </Button>
-                  <Button type="submit" className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white">
+                  <Button 
+                    type="submit" 
+                    className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white"
+                    onClick={(e) => {
+                      console.log('🖱️ Continue button clicked');
+                      console.log('📋 Current form state:', form.getValues());
+                      console.log('❌ Form errors:', form.formState.errors);
+                    }}
+                  >
                     Continue
                   </Button>
                 </div>
