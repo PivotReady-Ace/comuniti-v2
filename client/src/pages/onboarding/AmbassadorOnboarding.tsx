@@ -93,16 +93,8 @@ export function AmbassadorOnboarding() {
       followerCount: data.followerCount,
     });
     
-    console.log('✅ Platform data saved, navigating to next step...');
-    
-    // Check if user data already exists (account already created)
-    if (userData?.email && userData?.fullName && userData?.country) {
-      console.log('📍 User data exists, skipping to list builder');
-      setLocation('/onboarding/ambassador/list-builder');
-    } else {
-      console.log('📍 No user data, proceeding to account creation');
-      setLocation('/onboarding/ambassador/account');
-    }
+    console.log('✅ Platform data saved, proceeding to account creation');
+    setLocation('/onboarding/ambassador/account');
   };
 
   const handleEmailSubmit = (data: FormData) => {
