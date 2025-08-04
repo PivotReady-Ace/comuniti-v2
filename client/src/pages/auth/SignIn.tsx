@@ -43,16 +43,25 @@ export function SignIn() {
     setSignInError(null);
 
     try {
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
+      // Sign in via backend authentication endpoint
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        })
       });
 
-      if (error) {
-        throw error;
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Sign in failed');
       }
 
-      if (!authData.user) {
+      if (!result.user) {
         throw new Error('Sign in failed - no user data received');
       }
 

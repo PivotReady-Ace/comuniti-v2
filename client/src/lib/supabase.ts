@@ -1,31 +1,33 @@
 import { createClient } from '@supabase/supabase-js'
 
-// For development, we need to get Supabase credentials from the server-side environment
-// Since VITE_ prefixed vars may not be available in all contexts
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY
+// Get Supabase configuration from environment
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase environment check:', {
-    url: !!supabaseUrl,
-    key: !!supabaseAnonKey,
-    viteUrl: !!import.meta.env.VITE_SUPABASE_URL,
-    viteKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY
+// Initialize a basic client for session management even if not fully configured
+// This prevents runtime errors for components that check auth state
+const createBasicClient = () => {
+  // Use dummy values if environment variables are missing
+  const url = supabaseUrl || 'https://dummy.supabase.co'
+  const key = supabaseAnonKey || 'dummy-key'
+  
+  return createClient(url, key, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false,
+      flowType: 'pkce'
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'comuniti-mvp'
+      }
+    }
   })
-  throw new Error('Missing Supabase environment variables. Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: false,
-    // Allow non-standard email domains
-    flowType: 'pkce'
-  },
-  global: {
-    headers: {
-      'X-Client-Info': 'comuniti-mvp'
-    }
-  }
-})
+// Create the Supabase client
+export const supabase = createBasicClient()
+
+// Check if Supabase is properly configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey)

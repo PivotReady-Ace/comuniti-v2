@@ -3,13 +3,115 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertAmbassadorSchema, insertBusinessSchema, insertAmbassadorBusinessSchema } from "@shared/schema";
 import { z } from "zod";
+import { createClient } from '@supabase/supabase-js';
 
 const createAmbassadorRequestSchema = z.object({
   ambassador: insertAmbassadorSchema,
   businessIds: z.array(z.string()).optional().default([]),
 });
 
+// Server-side Supabase client for authentication
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
+
+let supabaseServer: any = null
+if (supabaseUrl && supabaseAnonKey) {
+  supabaseServer = createClient(supabaseUrl, supabaseAnonKey)
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Supabase configuration endpoint for frontend
+  app.get("/api/supabase-config", (req, res) => {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return res.status(500).json({ error: "Supabase configuration not available on server" })
+    }
+    
+    res.json({
+      url: supabaseUrl,
+      key: supabaseAnonKey
+    })
+  })
+
+  // Authentication proxy endpoints
+  app.post("/api/auth/signup", async (req, res) => {
+    if (!supabaseServer) {
+      return res.status(500).json({ error: "Authentication service not configured" })
+    }
+
+    try {
+      const { email, password, options } = req.body
+      
+      // Log the signup attempt for debugging
+      console.log(`Signup attempt for email: ${email}`)
+      
+      const { data, error } = await supabaseServer.auth.signUp({
+        email,
+        password,
+        options
+      })
+
+      if (error) {
+        console.error("Supabase signup error:", error)
+        // Handle specific Supabase email validation errors
+        if (error.message.includes('invalid') && email.includes('.marketing')) {
+          return res.status(400).json({ 
+            error: `Supabase doesn't recognize .marketing domain. The email ${email} needs to be allowlisted in your Supabase project settings under Authentication > Settings > Allow additional domains.`
+          })
+        }
+        return res.status(400).json({ error: error.message })
+      }
+
+      console.log(`Signup successful for: ${email}`)
+      res.json(data)
+    } catch (error) {
+      console.error("Signup error:", error)
+      res.status(500).json({ error: "Signup failed" })
+    }
+  })
+
+  app.post("/api/auth/signin", async (req, res) => {
+    if (!supabaseServer) {
+      return res.status(500).json({ error: "Authentication service not configured" })
+    }
+
+    try {
+      const { email, password } = req.body
+      
+      console.log(`Signin attempt for email: ${email}`)
+      
+      const { data, error } = await supabaseServer.auth.signInWithPassword({
+        email,
+        password
+      })
+
+      if (error) {
+        console.error("Supabase signin error:", error)
+        // Handle specific authentication errors
+        if (error.message.includes('invalid') && email.includes('.marketing')) {
+          return res.status(400).json({ 
+            error: `Authentication failed for .marketing domain. Please ensure ${email} is allowlisted in your Supabase project settings.`
+          })
+        }
+        return res.status(400).json({ error: error.message })
+      }
+
+      console.log(`Signin successful for: ${email}`)
+      res.json(data)
+    } catch (error) {
+      console.error("Signin error:", error)
+      res.status(500).json({ error: "Signin failed" })
+    }
+  })
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      res.json({ success: true })
+    } catch (error) {
+      console.error("Logout error:", error)
+      res.status(500).json({ error: "Logout failed" })
+    }
+  })
+
   // Ambassador routes
   app.get("/api/ambassadors", async (req, res) => {
     try {

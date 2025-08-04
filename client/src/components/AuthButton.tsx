@@ -12,25 +12,47 @@ export function AuthButton() {
   const { t } = useLanguage();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    // Get initial session with error handling
+    const getInitialSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+        setUser(null);
+      }
+    };
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    getInitialSession();
 
-    return subscription.unsubscribe;
+    // Listen for auth changes with error handling
+    try {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      return subscription.unsubscribe;
+    } catch (error) {
+      console.error('Error setting up auth state change listener:', error);
+      return () => {};
+    }
   }, []);
 
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      await supabase.auth.signOut();
-      // Clear local storage
+      // Call backend logout endpoint
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      // Clear user state and local storage
+      setUser(null);
       localStorage.removeItem('ambassadorUser');
+      
       // Redirect to home
       setLocation('/');
     } catch (error) {

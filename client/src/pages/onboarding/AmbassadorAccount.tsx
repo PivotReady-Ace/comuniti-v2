@@ -67,22 +67,30 @@ export function AmbassadorAccount() {
     setSignupError(null);
 
     try {
-      // Create account with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            full_name: data.fullName || '',
+      // Create account via backend authentication endpoint
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              full_name: data.fullName || '',
+            }
           }
-        }
+        })
       });
 
-      if (authError) {
-        throw authError;
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Signup failed');
       }
 
-      if (!authData.user) {
+      if (!result.user) {
         throw new Error('Failed to create user account');
       }
 
@@ -90,7 +98,7 @@ export function AmbassadorAccount() {
 
       // Store user data temporarily for the onboarding flow
       const userData = {
-        id: authData.user.id,
+        id: result.user.id,
         email: data.email,
         fullName: data.fullName,
         platform: data.platform,
