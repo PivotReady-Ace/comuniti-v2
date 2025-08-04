@@ -11,6 +11,9 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 4, 2025:**
+- **Trust Metrics Updated**: Replaced star ratings with "Member since [Month Year]" format using ambassador creation dates
+- **Layout Improvements**: Removed referral numbers and optimized stats grid from 3 to 2 columns for better visual balance
+- **Image Display Fixed**: Resolved ambassador profile photo loading issues by handling both logoUrl and logo_url field names
 - **Authentication System Fixed**: Resolved complete authentication failure for .marketing email domains
 - **Backend Authentication Proxy**: Implemented server-side authentication endpoints (/api/auth/signup, /api/auth/signin, /api/auth/logout)
 - **Email Confirmation Flow**: Added complete email confirmation system with /auth/email-confirmation page and callback handling
