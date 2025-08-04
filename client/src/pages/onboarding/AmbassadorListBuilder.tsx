@@ -65,12 +65,18 @@ type FormData = z.infer<typeof formSchema>;
 export function AmbassadorListBuilder() {
   const [, setLocation] = useLocation();
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
-  const { onboardingData, userData, getNextStep } = useOnboardingState();
+  const { onboardingData, userData, getNextStep, isDataLoaded } = useOnboardingState();
 
   console.log('🔄 AmbassadorListBuilder component mounted/rendered');
 
   // Safety check: redirect if missing required data (only on list-builder page)
   useEffect(() => {
+    // Wait for data to load before running safety checks
+    if (!isDataLoaded) {
+      console.log('⏳ Waiting for onboarding data to load...');
+      return;
+    }
+
     // Only redirect if we're actually on the list-builder page and missing data
     if (window.location.pathname === '/onboarding/ambassador/list-builder') {
       if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country) {
@@ -82,7 +88,7 @@ export function AmbassadorListBuilder() {
         console.log('All required data present on list-builder page');
       }
     }
-  }, [onboardingData, userData, getNextStep, setLocation]);
+  }, [isDataLoaded, onboardingData, userData, getNextStep, setLocation]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),

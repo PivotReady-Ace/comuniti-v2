@@ -24,6 +24,7 @@ export function useOnboardingState() {
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isCheckingExistingAmbassador, setIsCheckingExistingAmbassador] = useState(true);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // Load stored onboarding data on mount
   useEffect(() => {
@@ -37,6 +38,9 @@ export function useOnboardingState() {
     if (storedUser) {
       setUserData(JSON.parse(storedUser));
     }
+    
+    // Mark data as loaded after attempting to load from localStorage
+    setIsDataLoaded(true);
   }, []);
 
   // Check if user already has an ambassador profile
@@ -157,6 +161,7 @@ export function useOnboardingState() {
     onboardingData,
     userData,
     isCheckingExistingAmbassador,
+    isDataLoaded,
     saveOnboardingData,
     saveUserData,
     clearOnboardingData,
