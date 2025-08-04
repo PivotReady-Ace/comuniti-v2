@@ -41,22 +41,65 @@ export function AmbassadorBranding() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { onboardingData, userData, isDataLoaded, safeNavigateToNextStep, clearOnboardingData } = useOnboardingState();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [existingAmbassador, setExistingAmbassador] = useState(null);
 
-  // Safety check: redirect if missing required data
+  // Check if user is authenticated and has existing ambassador profile
   useEffect(() => {
-    if (!isDataLoaded) {
-      console.log('⏳ Branding page: Waiting for onboarding data to load...');
-      return;
-    }
+    const checkAuthenticatedUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          console.log('🔐 Authenticated user detected, checking for existing ambassador...');
+          
+          // Load existing ambassador data for editing
+          const response = await fetch('/api/ambassadors');
+          if (response.ok) {
+            const ambassadors = await response.json();
+            const userEmail = session.user.email;
+            const foundAmbassador = ambassadors.find((amb: any) => 
+              amb.name.toLowerCase().includes(userEmail?.split('@')[0]?.toLowerCase() || '') ||
+              amb.pageUrl.includes(userEmail?.split('@')[0]?.toLowerCase() || '')
+            );
+            
+            if (foundAmbassador) {
+              console.log('✅ Existing ambassador found, entering edit mode:', foundAmbassador.pageName);
+              setIsEditMode(true);
+              setExistingAmbassador(foundAmbassador);
+              
+              // Populate form with existing data
+              form.setValue('listName', foundAmbassador.pageName || '');
+              form.setValue('tagline', foundAmbassador.bio || '');
+              
+              return; // Skip onboarding safety checks
+            }
+          }
+        }
+        
+        console.log('👤 No authenticated user or existing ambassador, proceeding with onboarding checks');
+        
+        // Run normal onboarding safety checks for new users
+        if (!isDataLoaded) {
+          console.log('⏳ Branding page: Waiting for onboarding data to load...');
+          return;
+        }
 
-    const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
-    if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country || !storedBusinesses) {
-      console.log('⚠️ Branding page: Missing required data, redirecting to correct step');
-      safeNavigateToNextStep(setLocation);
-    } else {
-      console.log('✅ Branding page: All required data present');
-    }
-  }, [isDataLoaded, onboardingData, userData, safeNavigateToNextStep, setLocation]);
+        const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
+        if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country || !storedBusinesses) {
+          console.log('⚠️ Branding page: Missing required data, redirecting to correct step');
+          safeNavigateToNextStep(setLocation);
+        } else {
+          console.log('✅ Branding page: All required data present');
+        }
+        
+      } catch (error) {
+        console.error('❌ Error checking authentication status:', error);
+      }
+    };
+
+    checkAuthenticatedUser();
+  }, [isDataLoaded, onboardingData, userData, safeNavigateToNextStep, setLocation, form]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -250,14 +293,21 @@ export function AmbassadorBranding() {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[#003366] mb-2">
-            Brand Your Ambassador Page
+            {isEditMode ? 'Edit Your Ambassador Page' : 'Brand Your Ambassador Page'}
           </h1>
           <p className="text-gray-600">
-            Complete your profile to create your public recommendation page
+            {isEditMode ? 'Update your profile information and branding' : 'Complete your profile to create your public recommendation page'}
           </p>
-          <p className="text-sm text-[#F1762E] mt-2">
-            Returning to finish your profile? You can continue from here!
-          </p>
+          {!isEditMode && (
+            <p className="text-sm text-[#F1762E] mt-2">
+              Returning to finish your profile? You can continue from here!
+            </p>
+          )}
+          {isEditMode && existingAmbassador && (
+            <p className="text-sm text-green-600 mt-2">
+              ✅ Editing profile for: {existingAmbassador.pageName}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
@@ -381,10 +431,10 @@ export function AmbassadorBranding() {
                       {isSubmitting ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Creating Profile...
+                          {isEditMode ? 'Updating Profile...' : 'Creating Profile...'}
                         </>
                       ) : (
-                        'Create My Page'
+                        isEditMode ? 'Update My Page' : 'Create My Page'
                       )}
                     </Button>
                   </div>

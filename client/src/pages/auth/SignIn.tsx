@@ -66,6 +66,23 @@ export function SignIn() {
       }
 
       console.log('Successfully signed in:', data.email);
+      console.log('🔐 Backend auth result:', result);
+      
+      // CRITICAL: Establish frontend Supabase session from backend result
+      if (result.session) {
+        console.log('🔗 Setting frontend Supabase session...');
+        const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+          access_token: result.session.access_token,
+          refresh_token: result.session.refresh_token
+        });
+        
+        if (sessionError) {
+          console.error('❌ Failed to set frontend session:', sessionError);
+          throw new Error('Failed to establish session');
+        }
+        
+        console.log('✅ Frontend session established:', sessionData.session ? 'success' : 'failed');
+      }
       
       // Redirect to dashboard
       setLocation('/dashboard');
