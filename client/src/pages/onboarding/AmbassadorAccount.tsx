@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User } from 'lucide-react';
 import type { SupportedCountry } from '@shared/schema';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const formSchema = z.object({
   email: z.string()
@@ -37,6 +38,7 @@ export function AmbassadorAccount() {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { onboardingData, saveUserData } = useOnboardingState();
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
@@ -106,20 +108,27 @@ export function AmbassadorAccount() {
         throw new Error('Failed to create user account');
       }
 
-      // Store user data temporarily for the onboarding flow
+      // Store complete user data for the onboarding flow
       const userData = {
         id: result.user.id,
         email: data.email,
         fullName: data.fullName,
         country: data.country,
-        profileImage: imagePreview,
+        profileImage: imagePreview || null,
         createdAt: new Date().toISOString(),
+        // Merge platform data from previous step
+        ...onboardingData
       };
       
-      localStorage.setItem('ambassadorUser', JSON.stringify(userData));
+      saveUserData(userData);
 
-      // Navigate to platform/follower selection first
-      setLocation('/onboarding/ambassador');
+      // Navigate directly to list builder since we have platform data
+      if (onboardingData?.platforms && onboardingData?.followerCount) {
+        setLocation('/onboarding/ambassador/list-builder');
+      } else {
+        // Fallback if no platform data exists
+        setLocation('/onboarding/ambassador');
+      }
 
     } catch (error: any) {
       console.error('Signup error:', error);

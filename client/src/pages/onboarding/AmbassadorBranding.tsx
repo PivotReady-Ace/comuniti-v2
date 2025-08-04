@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User, ArrowLeft } from 'lucide-react';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const formSchema = z.object({
   listName: z.string().min(5, 'List name must be at least 5 characters'),
@@ -36,6 +37,17 @@ export function AmbassadorBranding() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { onboardingData, userData, getNextStep, clearOnboardingData } = useOnboardingState();
+
+  // Safety check: redirect if missing required data
+  useEffect(() => {
+    const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
+    if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country || !storedBusinesses) {
+      console.log('Missing required onboarding data, redirecting to correct step');
+      const nextStep = getNextStep();
+      setLocation(nextStep);
+    }
+  }, [onboardingData, userData, getNextStep, setLocation]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -126,8 +138,8 @@ export function AmbassadorBranding() {
       // Create ambassador profile for API using correct schema fields
       const ambassadorData = {
         name: userData.fullName || userData.email?.split('@')[0] || 'Ambassador',
-        platform: userData.platform || 'Instagram',
-        followerCount: userData.followerCount || 0,
+        platform: onboardingData.platforms?.[0] || 'Instagram',
+        followerCount: onboardingData.followerCount || 0,
         country: userData.country || '',
         logoUrl: imageUrl,
         pageName: data.listName,
@@ -183,13 +195,11 @@ export function AmbassadorBranding() {
       const createdAmbassador = await response.json();
       console.log('Ambassador profile created:', createdAmbassador);
 
-      // Keep stored data for potential re-use (don't clear on success)
-      // This allows users to continue from where they left off if needed
-      // localStorage.removeItem('ambassadorUser');
-      // localStorage.removeItem('selectedBusinesses');
+      // Clear onboarding data after successful completion
+      clearOnboardingData();
 
-      // Navigate to the public directory page
-      setLocation(`/directory/${slug}`);
+      // Navigate to the dashboard to see the completed profile
+      setLocation('/dashboard');
 
     } catch (error: any) {
       console.error('Branding submission error:', error);

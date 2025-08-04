@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const businessCategories = [
   'Tour Guide',
@@ -64,6 +65,16 @@ type FormData = z.infer<typeof formSchema>;
 export function AmbassadorListBuilder() {
   const [, setLocation] = useLocation();
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
+  const { onboardingData, userData, getNextStep } = useOnboardingState();
+
+  // Safety check: redirect if missing required data
+  useEffect(() => {
+    if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country) {
+      console.log('Missing required onboarding data, redirecting to correct step');
+      const nextStep = getNextStep();
+      setLocation(nextStep);
+    }
+  }, [onboardingData, userData, getNextStep, setLocation]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),

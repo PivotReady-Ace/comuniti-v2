@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { SupportedCountry } from '@shared/schema';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
@@ -33,6 +34,7 @@ export function AmbassadorOnboarding() {
   const [, setLocation] = useLocation();
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState(false);
+  const { userData, isCheckingExistingAmbassador, saveOnboardingData } = useOnboardingState();
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
@@ -52,13 +54,20 @@ export function AmbassadorOnboarding() {
     const minFollowerRequirement = 1; // Very low for MVP
 
     if (data.followerCount >= minFollowerRequirement) {
-      // Store data in localStorage for next step
-      localStorage.setItem('ambassadorOnboarding', JSON.stringify({
+      // Store data using the onboarding state hook
+      saveOnboardingData({
         platforms: data.platforms,
         followerCount: data.followerCount,
-      }));
+      });
       
-      setLocation('/onboarding/ambassador/account');
+      // Check if user data already exists (account already created)
+      if (userData?.email && userData?.fullName && userData?.country) {
+        // Skip account creation, go directly to list builder
+        setLocation('/onboarding/ambassador/list-builder');
+      } else {
+        // Need to create account first
+        setLocation('/onboarding/ambassador/account');
+      }
     } else {
       setShowEmailPrompt(true);
     }
@@ -71,6 +80,23 @@ export function AmbassadorOnboarding() {
       setSubmittedEmail(true);
     }
   };
+
+  // Show loading while checking for existing ambassador
+  if (isCheckingExistingAmbassador) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <h2 className="text-2xl font-bold text-primary mb-2">Checking Your Account</h2>
+            <p className="text-gray-600">Please wait while we check your onboarding status...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (submittedEmail) {
     return (
