@@ -15,7 +15,6 @@ import type { SupportedCountry } from '@shared/schema';
 const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
   followerCount: z.coerce.number().min(0, "Follower count must be 0 or greater"),
-  country: z.string().min(1, "Please select your country"),
   email: z.string().email("Please enter a valid email").or(z.literal("")),
 });
 
@@ -45,7 +44,6 @@ export function AmbassadorOnboarding() {
     defaultValues: {
       platforms: [],
       followerCount: 1,
-      country: '',
       email: '',
     },
   });
@@ -58,7 +56,6 @@ export function AmbassadorOnboarding() {
       localStorage.setItem('ambassadorOnboarding', JSON.stringify({
         platforms: data.platforms,
         followerCount: data.followerCount,
-        country: data.country,
       }));
       
       setLocation('/onboarding/ambassador/account');
@@ -226,37 +223,7 @@ export function AmbassadorOnboarding() {
                   )}
                 />
 
-                {/* Country Selection */}
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base font-semibold">
-                        What country do you currently live in?
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select your country" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {countriesLoading ? (
-                            <SelectItem value="loading" disabled>Loading countries...</SelectItem>
-                          ) : (
-                            countries?.map((country: SupportedCountry) => (
-                              <SelectItem key={country.id} value={country.name}>
-                                {country.name}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
 
                 {/* Submit Button */}
                 <div className="flex gap-3 pt-4">
