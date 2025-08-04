@@ -21,9 +21,10 @@ type FormData = z.infer<typeof formSchema>;
 
 const platforms = [
   { id: 'youtube', label: 'YouTube' },
-  { id: 'facebook', label: 'Facebook' },
   { id: 'instagram', label: 'Instagram' },
+  { id: 'facebook', label: 'Facebook' },
   { id: 'tiktok', label: 'TikTok' },
+  { id: 'linkedin', label: 'LinkedIn' },
   { id: 'other', label: 'Other' },
 ];
 
