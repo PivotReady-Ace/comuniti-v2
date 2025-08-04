@@ -335,9 +335,9 @@ export default function AmbassadorDirectorySimple() {
             <div className="flex items-center gap-3 mb-2">
               <span className="text-gray-500 text-sm">{t('footer.powered-by')}</span>
               <img 
-                src="/assets/Grayscale-Transparent.svg"
+                src="/assets/Transparent-Logo.svg"
                 alt="Comuniti"
-                className="h-6 opacity-50 hover:opacity-70 transition-opacity"
+                className="h-6 opacity-50 grayscale hover:opacity-70 transition-opacity"
               />
             </div>
             <p className="text-xs text-gray-400">
