@@ -337,7 +337,7 @@ export default function AmbassadorDirectorySimple() {
               <img 
                 src="/assets/Transparent-Logo.svg"
                 alt="Comuniti"
-                className="h-7 opacity-50 grayscale hover:opacity-70 transition-opacity -ml-2.5"
+                className="h-7 opacity-50 grayscale hover:opacity-70 transition-opacity -ml-3"
               />
             </div>
             <p className="text-xs text-gray-400">
