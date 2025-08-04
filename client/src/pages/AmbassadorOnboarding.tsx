@@ -48,6 +48,10 @@ export default function AmbassadorOnboarding() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const { toast } = useToast();
 
+  // Debug logging
+  console.log('SOCIAL_PLATFORMS:', SOCIAL_PLATFORMS);
+  console.log('Number of platforms:', SOCIAL_PLATFORMS.length);
+
   const form1 = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
@@ -193,23 +197,26 @@ export default function AmbassadorOnboarding() {
                 <FormItem>
                   <FormLabel>Social Media Platform *</FormLabel>
                   <FormControl>
-                    <div className="grid grid-cols-2 gap-3">
-                      {SOCIAL_PLATFORMS.map((platform) => (
-                        <Button
-                          key={platform.id}
-                          type="button"
-                          variant={field.value === platform.id ? "default" : "outline"}
-                          className={`flex items-center justify-center p-4 h-auto ${
-                            field.value === platform.id
-                              ? `bg-${platform.color} border-${platform.color}`
-                              : `hover:border-${platform.color} hover:bg-gray-50`
-                          }`}
-                          onClick={() => field.onChange(platform.id)}
-                        >
-                          <i className={`${platform.icon} text-2xl mr-2`}></i>
-                          <span className="font-medium">{platform.name}</span>
-                        </Button>
-                      ))}
+                    <div className="space-y-3">
+                      {SOCIAL_PLATFORMS.map((platform) => {
+                        console.log('Rendering platform:', platform.name);
+                        return (
+                          <Button
+                            key={platform.id}
+                            type="button"
+                            variant={field.value === platform.id ? "default" : "outline"}
+                            className={`w-full flex items-center justify-start p-4 h-auto text-left ${
+                              field.value === platform.id
+                                ? "bg-comuniti-blue text-white"
+                                : "hover:bg-gray-50"
+                            }`}
+                            onClick={() => field.onChange(platform.id)}
+                          >
+                            <i className={`${platform.icon} text-2xl mr-3`}></i>
+                            <span className="font-medium">{platform.name}</span>
+                          </Button>
+                        );
+                      })}
                     </div>
                   </FormControl>
                   <FormMessage />
