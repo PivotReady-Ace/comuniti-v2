@@ -41,7 +41,7 @@ export function AuthButton() {
   };
 
   const handleLogin = () => {
-    setLocation('/onboarding/ambassador');
+    setLocation('/auth/sign-in');
   };
 
   if (user) {
