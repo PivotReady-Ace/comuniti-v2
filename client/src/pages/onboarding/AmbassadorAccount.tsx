@@ -50,13 +50,16 @@ export function AmbassadorAccount() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Safety check: redirect if missing required platform data after loading
+  // Log platform data status but don't redirect - users may legitimately need to create accounts
   useEffect(() => {
-    if (isOnboardingDataLoaded && (!onboardingData?.platforms || !onboardingData?.followerCount)) {
-      console.log('Missing platform data after loading, redirecting to platform selection');
-      setLocation('/onboarding/ambassador');
+    if (isOnboardingDataLoaded) {
+      if (!onboardingData?.platforms || !onboardingData?.followerCount) {
+        console.log('Warning: Platform data not found, but allowing account creation to proceed');
+      } else {
+        console.log('Platform data loaded successfully:', onboardingData);
+      }
     }
-  }, [isOnboardingDataLoaded, onboardingData, setLocation]);
+  }, [isOnboardingDataLoaded, onboardingData]);
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
