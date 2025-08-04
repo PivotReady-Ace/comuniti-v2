@@ -60,10 +60,9 @@ export function AmbassadorOnboarding() {
       formErrors: form.formState.errors
     });
 
-    // Prevent default form submission behavior
     const minFollowerRequirement = 1; // Very low for MVP
 
-    if (data.followerCount >= minFollowerRequirement) {
+    if (data.followerCount >= minFollowerRequirement && data.platforms.length > 0) {
       // Store data using the onboarding state hook
       saveOnboardingData({
         platforms: data.platforms,
@@ -72,20 +71,22 @@ export function AmbassadorOnboarding() {
       
       console.log('✅ Platform data saved, determining next step...');
       
-      // Small delay to ensure state is saved
-      setTimeout(() => {
-        // Check if user data already exists (account already created)
-        if (userData?.email && userData?.fullName && userData?.country) {
-          console.log('📍 User data exists, skipping to list builder');
-          setLocation('/onboarding/ambassador/list-builder');
-        } else {
-          console.log('📍 No user data, proceeding to account creation');
-          setLocation('/onboarding/ambassador/account');
-        }
-      }, 100);
+      // Check if user data already exists (account already created)
+      if (userData?.email && userData?.fullName && userData?.country) {
+        console.log('📍 User data exists, skipping to list builder');
+        setLocation('/onboarding/ambassador/list-builder');
+      } else {
+        console.log('📍 No user data, proceeding to account creation');
+        setLocation('/onboarding/ambassador/account');
+      }
     } else {
-      console.log('❌ Follower count below threshold, showing email prompt');
-      setShowEmailPrompt(true);
+      console.log('❌ Validation failed - platforms:', data.platforms, 'follower count:', data.followerCount);
+      if (data.platforms.length === 0) {
+        form.setError('platforms', { message: 'Please select at least one platform' });
+      }
+      if (data.followerCount < minFollowerRequirement) {
+        setShowEmailPrompt(true);
+      }
     }
   };
 
@@ -202,11 +203,7 @@ export function AmbassadorOnboarding() {
           <CardContent className="pt-6">
             <Form {...form}>
               <form 
-                onSubmit={(e) => {
-                  console.log('📝 Form onSubmit event triggered');
-                  e.preventDefault();
-                  form.handleSubmit(onSubmit)(e);
-                }} 
+                onSubmit={form.handleSubmit(onSubmit)} 
                 className="space-y-6"
               >
                 {/* Platform Selection */}
@@ -286,12 +283,25 @@ export function AmbassadorOnboarding() {
                     Back
                   </Button>
                   <Button 
-                    type="submit" 
+                    type="button" 
                     className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white"
                     onClick={(e) => {
                       console.log('🖱️ Continue button clicked');
-                      console.log('📋 Current form state:', form.getValues());
+                      const formData = form.getValues();
+                      console.log('📋 Current form state:', formData);
                       console.log('❌ Form errors:', form.formState.errors);
+                      console.log('✅ Form valid:', form.formState.isValid);
+                      
+                      // Manual validation and submission
+                      if (formData.platforms.length > 0 && formData.followerCount >= 1) {
+                        console.log('✅ Manual validation passed, calling onSubmit');
+                        onSubmit(formData);
+                      } else {
+                        console.log('❌ Manual validation failed');
+                        if (formData.platforms.length === 0) {
+                          form.setError('platforms', { message: 'Please select at least one platform' });
+                        }
+                      }
                     }}
                   >
                     Continue
