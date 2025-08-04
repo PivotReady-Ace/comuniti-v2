@@ -100,3 +100,4 @@ Preferred communication style: Simple, everyday language.
 - **Development**: Vite dev server with HMR, TypeScript compilation, and Express backend proxy
 - **Production Build**: Vite builds client assets, ESBuild bundles server code into single file
 - **Environment**: Node.js runtime with ES modules, environment-based configuration for database connections
+- **Custom Domain**: comuniti.co (to be configured in Replit Deployments settings after initial deployment)
