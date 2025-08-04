@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -38,7 +38,25 @@ export function AmbassadorAccount() {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isOnboardingDataLoaded, setIsOnboardingDataLoaded] = useState(false);
   const { onboardingData, saveUserData } = useOnboardingState();
+
+  // Wait for onboardingData to load before making navigation decisions
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsOnboardingDataLoaded(true);
+    }, 500); // Give time for localStorage to load
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Safety check: redirect if missing required platform data after loading
+  useEffect(() => {
+    if (isOnboardingDataLoaded && (!onboardingData?.platforms || !onboardingData?.followerCount)) {
+      console.log('Missing platform data after loading, redirecting to platform selection');
+      setLocation('/onboarding/ambassador');
+    }
+  }, [isOnboardingDataLoaded, onboardingData, setLocation]);
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
@@ -122,13 +140,8 @@ export function AmbassadorAccount() {
       
       saveUserData(userData);
 
-      // Navigate directly to list builder since we have platform data
-      if (onboardingData?.platforms && onboardingData?.followerCount) {
-        setLocation('/onboarding/ambassador/list-builder');
-      } else {
-        // Fallback if no platform data exists
-        setLocation('/onboarding/ambassador');
-      }
+      // Navigate to list builder (platform data already validated on page load)
+      setLocation('/onboarding/ambassador/list-builder');
 
     } catch (error: any) {
       console.error('Signup error:', error);
@@ -153,6 +166,18 @@ export function AmbassadorAccount() {
   const goBack = () => {
     setLocation('/onboarding/ambassador');
   };
+
+  // Show loading while onboarding data loads
+  if (!isOnboardingDataLoaded) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-[#F1762E]" />
+          <p className="text-gray-600">Loading account setup...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white py-8 px-4">
