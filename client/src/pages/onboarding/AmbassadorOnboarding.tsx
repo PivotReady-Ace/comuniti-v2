@@ -51,6 +51,13 @@ export function AmbassadorOnboarding() {
   });
 
   const onSubmit = (data: FormData) => {
+    console.log('🚀 Ambassador onboarding form submitted:', {
+      platforms: data.platforms,
+      followerCount: data.followerCount,
+      userData: userData,
+      isCheckingExistingAmbassador
+    });
+
     const minFollowerRequirement = 1; // Very low for MVP
 
     if (data.followerCount >= minFollowerRequirement) {
@@ -60,15 +67,18 @@ export function AmbassadorOnboarding() {
         followerCount: data.followerCount,
       });
       
+      console.log('✅ Platform data saved, determining next step...');
+      
       // Check if user data already exists (account already created)
       if (userData?.email && userData?.fullName && userData?.country) {
-        // Skip account creation, go directly to list builder
+        console.log('📍 User data exists, skipping to list builder');
         setLocation('/onboarding/ambassador/list-builder');
       } else {
-        // Need to create account first
+        console.log('📍 No user data, proceeding to account creation');
         setLocation('/onboarding/ambassador/account');
       }
     } else {
+      console.log('❌ Follower count below threshold, showing email prompt');
       setShowEmailPrompt(true);
     }
   };
@@ -81,8 +91,8 @@ export function AmbassadorOnboarding() {
     }
   };
 
-  // Show loading while checking for existing ambassador
-  if (isCheckingExistingAmbassador) {
+  // Show loading while checking for existing ambassador (temporarily disabled for debugging)
+  if (false && isCheckingExistingAmbassador) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
         <Card className="w-full max-w-md">

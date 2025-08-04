@@ -138,8 +138,8 @@ export function AmbassadorBranding() {
       // Create ambassador profile for API using correct schema fields
       const ambassadorData = {
         name: userData.fullName || userData.email?.split('@')[0] || 'Ambassador',
-        platform: onboardingData.platforms?.[0] || 'Instagram',
-        followerCount: onboardingData.followerCount || 0,
+        platform: onboardingData?.platforms?.[0] || 'Instagram',
+        followerCount: onboardingData?.followerCount || 0,
         country: userData.country || '',
         logoUrl: imageUrl,
         pageName: data.listName,

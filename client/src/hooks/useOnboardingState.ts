@@ -43,15 +43,19 @@ export function useOnboardingState() {
   useEffect(() => {
     const checkExistingAmbassador = async () => {
       try {
+        console.log('🔍 Checking for existing ambassador profile...');
         setIsCheckingExistingAmbassador(true);
         
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session?.user) {
+          console.log('📌 No authenticated session found, skipping ambassador check');
           setIsCheckingExistingAmbassador(false);
           return;
         }
 
+        console.log('👤 Authenticated user found, checking for existing ambassador');
+        
         // Check if ambassador already exists
         const response = await fetch('/api/ambassadors');
         
@@ -63,29 +67,35 @@ export function useOnboardingState() {
           );
 
           if (existingAmbassador) {
-            console.log('Existing ambassador found, redirecting to dashboard');
+            console.log('✅ Existing ambassador found, redirecting to dashboard');
             setLocation('/dashboard');
             return;
+          } else {
+            console.log('📋 No existing ambassador found, continuing onboarding');
           }
         }
       } catch (error) {
-        console.error('Error checking existing ambassador:', error);
+        console.error('❌ Error checking existing ambassador:', error);
       } finally {
         setIsCheckingExistingAmbassador(false);
       }
     };
 
+    // Only check if we have user data with fullName
     if (userData?.fullName) {
       checkExistingAmbassador();
     } else {
+      console.log('📝 No user data available, skipping ambassador check');
       setIsCheckingExistingAmbassador(false);
     }
-  }, [userData, setLocation]);
+  }, [userData?.fullName, setLocation]);
 
   // Save onboarding data to localStorage
   const saveOnboardingData = (data: OnboardingData) => {
+    console.log('💾 Saving onboarding data:', data);
     setOnboardingData(data);
     localStorage.setItem('ambassadorOnboarding', JSON.stringify(data));
+    console.log('✅ Onboarding data saved to localStorage');
   };
 
   // Save user data to localStorage
