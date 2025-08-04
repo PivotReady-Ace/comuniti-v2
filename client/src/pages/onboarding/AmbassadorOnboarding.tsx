@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { SupportedCountry } from '@shared/schema';
 
 const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
@@ -28,23 +30,15 @@ const platforms = [
   { id: 'other', label: 'Other' },
 ];
 
-const countries = [
-  { value: 'us', label: 'United States' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'fr', label: 'France' },
-  { value: 'es', label: 'Spain' },
-  { value: 'mx', label: 'Mexico' },
-  { value: 'ar', label: 'Argentina' },
-  { value: 'pa', label: 'Panama' },
-  { value: 'co', label: 'Colombia' },
-  { value: 'pt', label: 'Portugal' },
-  { value: 'cr', label: 'Costa Rica' },
-];
-
 export function AmbassadorOnboarding() {
   const [, setLocation] = useLocation();
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState(false);
+
+  // Fetch supported countries from API
+  const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
+    queryKey: ['/api/supported-countries'],
+  });
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -248,11 +242,15 @@ export function AmbassadorOnboarding() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {countries.map((country) => (
-                            <SelectItem key={country.value} value={country.value}>
-                              {country.label}
-                            </SelectItem>
-                          ))}
+                          {countriesLoading ? (
+                            <SelectItem value="loading" disabled>Loading countries...</SelectItem>
+                          ) : (
+                            countries?.map((country: SupportedCountry) => (
+                              <SelectItem key={country.id} value={country.name}>
+                                {country.name}
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />

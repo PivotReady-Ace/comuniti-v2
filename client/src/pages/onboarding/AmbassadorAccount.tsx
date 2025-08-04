@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User } from 'lucide-react';
-import { COUNTRIES } from '@/utils/constants';
+import type { SupportedCountry } from '@shared/schema';
 
 const formSchema = z.object({
   email: z.string()
@@ -36,6 +37,11 @@ export function AmbassadorAccount() {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Fetch supported countries from API
+  const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
+    queryKey: ['/api/supported-countries'],
+  });
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -231,11 +237,15 @@ export function AmbassadorAccount() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {COUNTRIES.map((country) => (
-                            <SelectItem key={country} value={country}>
-                              {country}
-                            </SelectItem>
-                          ))}
+                          {countriesLoading ? (
+                            <SelectItem value="loading" disabled>Loading countries...</SelectItem>
+                          ) : (
+                            countries?.map((country: SupportedCountry) => (
+                              <SelectItem key={country.id} value={country.name}>
+                                {country.name}
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />

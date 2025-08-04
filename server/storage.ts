@@ -8,7 +8,8 @@ import type {
   Review,
   InsertReview,
   Referral,
-  InsertReferral
+  InsertReferral,
+  SupportedCountry
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
@@ -19,9 +20,10 @@ import {
   businesses, 
   ambassadorBusinesses, 
   reviews, 
-  referrals 
+  referrals,
+  supportedCountries
 } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 
 export interface IStorage {
   // Ambassador operations
@@ -47,6 +49,9 @@ export interface IStorage {
   // Referral operations
   createReferral(referral: InsertReferral): Promise<Referral>;
   getReferralsByAmbassador(ambassadorId: string): Promise<Referral[]>;
+  
+  // Country operations
+  getSupportedCountries(): Promise<SupportedCountry[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -175,6 +180,23 @@ export class MemStorage implements IStorage {
       (referral) => referral.ambassadorId === ambassadorId
     );
   }
+
+  // Country operations
+  async getSupportedCountries(): Promise<SupportedCountry[]> {
+    // For memory storage, return static list
+    return [
+      { id: '1', name: 'United States', slug: 'united-states', isActive: true, createdAt: new Date() },
+      { id: '2', name: 'Brazil', slug: 'brazil', isActive: true, createdAt: new Date() },
+      { id: '3', name: 'Colombia', slug: 'colombia', isActive: true, createdAt: new Date() },
+      { id: '4', name: 'Costa Rica', slug: 'costa-rica', isActive: true, createdAt: new Date() },
+      { id: '5', name: 'France', slug: 'france', isActive: true, createdAt: new Date() },
+      { id: '6', name: 'Mexico', slug: 'mexico', isActive: true, createdAt: new Date() },
+      { id: '7', name: 'Panama', slug: 'panama', isActive: true, createdAt: new Date() },
+      { id: '8', name: 'Portugal', slug: 'portugal', isActive: true, createdAt: new Date() },
+      { id: '9', name: 'Spain', slug: 'spain', isActive: true, createdAt: new Date() },
+      { id: '10', name: 'Thailand', slug: 'thailand', isActive: true, createdAt: new Date() }
+    ].sort((a, b) => a.name.localeCompare(b.name));
+  }
 }
 
 // Database storage implementation using Supabase
@@ -279,6 +301,16 @@ export class DatabaseStorage implements IStorage {
 
   async getReferralsByAmbassador(ambassadorId: string): Promise<Referral[]> {
     return await this.db.select().from(referrals).where(eq(referrals.ambassadorId, ambassadorId));
+  }
+
+  // Country operations
+  async getSupportedCountries(): Promise<SupportedCountry[]> {
+    const result = await this.db
+      .select()
+      .from(supportedCountries)
+      .where(eq(supportedCountries.isActive, true))
+      .orderBy(asc(supportedCountries.name));
+    return result;
   }
 }
 

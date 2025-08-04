@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertAmbassadorSchema, insertBusinessSchema, insertAmbassadorBusinessSchema } from "@shared/schema";
+import { insertAmbassadorSchema, insertBusinessSchema, insertAmbassadorBusinessSchema, supportedCountries } from "@shared/schema";
 import { z } from "zod";
 import { createClient } from '@supabase/supabase-js';
 
@@ -276,6 +276,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching businesses:", error);
       res.status(500).json({ error: "Failed to fetch businesses" });
+    }
+  });
+
+  // Get supported countries
+  app.get("/api/supported-countries", async (req, res) => {
+    try {
+      const countries = await storage.getSupportedCountries();
+      res.json(countries);
+    } catch (error) {
+      console.error("Error fetching supported countries:", error);
+      res.status(500).json({ error: "Failed to fetch countries" });
     }
   });
 

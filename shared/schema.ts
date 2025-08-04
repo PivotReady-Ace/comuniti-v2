@@ -51,6 +51,14 @@ export const referrals = pgTable("referrals", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+export const supportedCountries = pgTable("supported_countries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().unique(),
+  slug: text("slug").notNull().unique(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertAmbassadorSchema = createInsertSchema(ambassadors).omit({
   id: true,
@@ -77,15 +85,22 @@ export const insertReferralSchema = createInsertSchema(referrals).omit({
   timestamp: true,
 });
 
+export const insertSupportedCountrySchema = createInsertSchema(supportedCountries).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type Ambassador = typeof ambassadors.$inferSelect;
 export type Business = typeof businesses.$inferSelect;
 export type AmbassadorBusiness = typeof ambassadorBusinesses.$inferSelect;
 export type Review = typeof reviews.$inferSelect;
 export type Referral = typeof referrals.$inferSelect;
+export type SupportedCountry = typeof supportedCountries.$inferSelect;
 
 export type InsertAmbassador = z.infer<typeof insertAmbassadorSchema>;
 export type InsertBusiness = z.infer<typeof insertBusinessSchema>;
 export type InsertAmbassadorBusiness = z.infer<typeof insertAmbassadorBusinessSchema>;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type InsertReferral = z.infer<typeof insertReferralSchema>;
+export type InsertSupportedCountry = z.infer<typeof insertSupportedCountrySchema>;
