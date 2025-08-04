@@ -51,10 +51,10 @@ export function AmbassadorBranding() {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check file size (max 5MB)
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      // Check file size (max 10MB - more generous limit)
+      const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
       if (file.size > maxSizeInBytes) {
-        setSubmitError('Image file is too large. Please choose a file smaller than 5MB.');
+        setSubmitError('Image file is too large. Please choose a file smaller than 10MB.');
         event.target.value = ''; // Clear the input
         return;
       }
@@ -96,41 +96,25 @@ export function AmbassadorBranding() {
         throw new Error('List name must create a valid URL slug (at least 3 characters after processing)');
       }
 
-      // Handle image upload to Supabase storage
+      // Handle image upload - convert to base64 for now (MVP approach)
       let imageUrl = null;
       if (selectedImage) {
         try {
-          const fileExt = selectedImage.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const filePath = `ambassador-logos/${fileName}`;
-
-          const { data, error } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, selectedImage, {
-              cacheControl: '3600',
-              upsert: false
-            });
-
-          if (error) {
-            console.error('Image upload error:', error);
-            if (error.message.includes('The resource was not found')) {
-              setSubmitError('Storage bucket not found. Please create an "avatars" bucket in your Supabase storage dashboard.');
-            } else {
-              setSubmitError(`Failed to upload image: ${error.message}`);
-            }
-            return;
-          }
-
-          // Get public URL for the uploaded image
-          const { data: publicUrlData } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(filePath);
-
-          imageUrl = publicUrlData.publicUrl;
-          console.log('Image uploaded successfully:', imageUrl);
+          // For MVP, we'll store image as base64 data URL
+          // This avoids Supabase storage setup complexity
+          const reader = new FileReader();
+          const imageDataPromise = new Promise<string>((resolve, reject) => {
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = reject;
+          });
+          
+          reader.readAsDataURL(selectedImage);
+          imageUrl = await imageDataPromise;
+          
+          console.log('Image processed successfully as base64');
         } catch (error) {
-          console.error('Image upload error:', error);
-          setSubmitError('Failed to upload image. Please try again.');
+          console.error('Image processing error:', error);
+          setSubmitError('Failed to process image. Please try again with a smaller file.');
           return;
         }
       }
@@ -277,7 +261,7 @@ export function AmbassadorBranding() {
                           {selectedImage ? 'Change Photo' : 'Upload Photo'}
                         </Label>
                         <p className="text-xs text-gray-500 mt-1">
-                          Max file size: 5MB. Supported formats: JPEG, PNG, WebP
+                          Max file size: 10MB. Supported formats: JPEG, PNG, WebP
                         </p>
                         {selectedImage && (
                           <p className="text-sm text-gray-500 mt-1">
