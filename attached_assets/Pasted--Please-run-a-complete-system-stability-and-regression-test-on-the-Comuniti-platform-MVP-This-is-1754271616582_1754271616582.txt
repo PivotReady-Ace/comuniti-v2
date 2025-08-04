@@ -1,0 +1,59 @@
+🧪 Please run a complete system stability and regression test on the Comuniti platform MVP.
+
+This is a production-critical request. Do not rely on simulated data or superficial success messages.
+
+✅ Verify the following across real API calls, Supabase reads/writes, and full routing:
+
+🔐 Authentication
+	•	Create a new ambassador account using /onboarding/ambassador/account
+	•	Sign out and then sign back in with the same credentials at /auth/sign-in
+	•	Confirm that session persistence works across browser refreshes
+
+👣 Ambassador Flow (End-to-End)
+	•	Complete full onboarding:
+	•	Platform selection
+	•	Follower count + country
+	•	Account creation
+	•	Business list creation with 2+ entries
+	•	Branding step with image and public list name
+	•	Verify that the resulting page at /directory/[slug] renders correctly
+	•	Business info must display WhatsApp, categories, and contact details
+
+🔁 Edit & Session Behavior
+	•	Sign in again and access /dashboard
+	•	Confirm that ambassador profile and business list display
+	•	No redirect loop or missing data errors
+
+🌐 Internationalization
+	•	Switch to Spanish and Portuguese
+	•	Confirm that UI updates correctly on at least 3 pages (landing, onboarding, dashboard)
+	•	Ensure language selection persists between routes
+
+📤 Database Integrity
+	•	Validate that:
+	•	All fields submitted in onboarding are correctly saved in Supabase
+	•	The correct ambassador_id and business_id relations are maintained
+	•	Image data is stored properly and rendered from base64
+
+❌ Failure State Testing
+	•	Attempt form submission with:
+	•	Missing required fields
+	•	Invalid WhatsApp format
+	•	Oversized image (>10MB)
+	•	Confirm that validation is triggered and accurate error messages are displayed
+
+🔁 Authentication Edge Cases
+	•	Try to visit /dashboard while not logged in — should redirect to /auth/sign-in
+	•	Try to visit /onboarding/ambassador/list-builder directly as a logged-out user — must be blocked
+
+🧼 Architecture & Workarounds
+
+⚠️ Do not apply workarounds unless they clearly simplify the architecture and do not introduce future technical debt.
+	•	No duplicated data storage
+	•	No client-side-only logic where security is required
+	•	No use of mock data where real database access is expected
+
+✅ If anything fails:
+	•	Identify the source of the issue
+	•	Provide a clear description of the fix
+	•	Apply only if it fits within the existing architecture or improves it
