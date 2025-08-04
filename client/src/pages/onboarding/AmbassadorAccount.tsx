@@ -14,7 +14,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User } from 'lucide-react';
 
 const formSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .refine((email) => {
+      // More permissive email validation to allow .marketing and other TLDs
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }, 'Please enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   fullName: z.string().optional(),
   platform: z.string().min(1, 'Please select a platform'),
@@ -106,8 +112,10 @@ export function AmbassadorAccount() {
       if (error?.message?.includes('already registered') || error?.message?.includes('User already registered')) {
         setSignupError('An account with this email already exists. Please use a different email or sign in instead.');
       } else if (error?.message?.includes('Password should be at least')) {
-        setSignupError('Password is too weak. Please choose a stronger password with at least 6 characters.');
-      } else if (error?.message?.includes('Invalid email')) {
+        setSignupError('Password is too weak. Please choose a stronger password with at least 8 characters.');
+      } else if (error?.message?.includes('Invalid email') || error?.message?.includes('invalid_email')) {
+        setSignupError(`Email format issue: ${data.email}. Please check your email address or contact support if using a non-standard domain like .marketing`);
+      } else if (error?.message?.includes('Invalid login credentials')) {
         setSignupError('Please enter a valid email address.');
       } else {
         setSignupError(error?.message || 'Failed to create account. Please try again.');

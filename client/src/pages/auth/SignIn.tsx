@@ -13,7 +13,13 @@ import { Loader2, Mail, Lock } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 
 const signInSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .refine((email) => {
+      // More permissive email validation to allow .marketing and other TLDs
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }, 'Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -65,6 +71,8 @@ export function SignIn() {
         setSignInError('Please check your email and click the confirmation link before signing in.');
       } else if (error?.message?.includes('Too many requests')) {
         setSignInError('Too many sign-in attempts. Please wait a few minutes and try again.');
+      } else if (error?.message?.includes('Invalid email') || error?.message?.includes('invalid_email')) {
+        setSignInError(`Email format issue with ${data.email}. Please contact support if using a non-standard domain like .marketing`);
       } else {
         setSignInError(error?.message || 'Failed to sign in. Please try again.');
       }
