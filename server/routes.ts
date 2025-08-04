@@ -190,8 +190,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { ambassador: ambassadorData, businessIds } = createAmbassadorRequestSchema.parse(req.body);
       
+      // Log incoming data for validation
+      console.log("🆕 Creating new ambassador with data:", {
+        name: ambassadorData.name,
+        platform: ambassadorData.platform,
+        followerCount: ambassadorData.followerCount,
+        country: ambassadorData.country,
+        pageUrl: ambassadorData.pageUrl,
+        pageName: ambassadorData.pageName,
+        businessCount: businessIds.length
+      });
+      
       // Create the ambassador
       const ambassador = await storage.createAmbassador(ambassadorData);
+      
+      // Log successful creation
+      console.log("✅ Ambassador created successfully:", {
+        id: ambassador.id,
+        name: ambassador.name,
+        platform: ambassador.platform,
+        followerCount: ambassador.followerCount,
+        country: ambassador.country,
+        pageUrl: ambassador.pageUrl,
+        verified: ambassador.verified,
+        createdAt: ambassador.createdAt
+      });
       
       // Link businesses to ambassador
       for (const businessId of businessIds) {
@@ -199,11 +222,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ambassadorId: ambassador.id,
           businessId,
         });
+        console.log(`🔗 Linked business ${businessId} to ambassador ${ambassador.id}`);
       }
       
+      console.log(`🎉 Ambassador onboarding complete for ${ambassador.name} (${ambassador.pageUrl})`);
       res.json(ambassador);
     } catch (error) {
-      console.error("Error creating ambassador:", error);
+      console.error("❌ Error creating ambassador:", error);
       res.status(400).json({ 
         error: error instanceof Error ? error.message : "Failed to create ambassador" 
       });

@@ -11,6 +11,10 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 4, 2025:**
+- **Complete Onboarding Test Validation**: Verified all ambassador directory fields display correctly in public view
+- **Database Logging Enhanced**: Added comprehensive console logging for ambassador creation with field validation
+- **Field Display Confirmed**: All required fields properly shown in directory (name, country, platform, follower count, branding, list name, business links)
+- **API Integration Tested**: Created 10 test ambassadors across multiple platforms and countries with business connections
 - **Onboarding Flow Refactored**: Cleaned up ambassador onboarding by moving country selection to account creation step and enforcing follower threshold before progression
 - **Account Creation Enhanced**: /onboarding/ambassador/account now collects email, password, full name, country, and optional profile image
 - **Platform Selection Streamlined**: /onboarding/ambassador now focuses solely on platform and follower count with threshold enforcement
