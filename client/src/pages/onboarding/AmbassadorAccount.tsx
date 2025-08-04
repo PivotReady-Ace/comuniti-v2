@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User } from 'lucide-react';
+import { COUNTRIES } from '@/utils/constants';
 
 const formSchema = z.object({
   email: z.string()
@@ -22,9 +23,7 @@ const formSchema = z.object({
       return emailRegex.test(email);
     }, 'Please enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  fullName: z.string().optional(),
-  platform: z.string().min(1, 'Please select a platform'),
-  followerCount: z.string().min(1, 'Please enter your follower count'),
+  fullName: z.string().min(1, 'Full name is required'),
   country: z.string().min(1, 'Please select your country'),
   profileImage: z.any().optional(),
 });
@@ -44,8 +43,6 @@ export function AmbassadorAccount() {
       email: '',
       password: '',
       fullName: '',
-      platform: '',
-      followerCount: '',
       country: '',
     },
   });
@@ -108,8 +105,6 @@ export function AmbassadorAccount() {
         id: result.user.id,
         email: data.email,
         fullName: data.fullName,
-        platform: data.platform,
-        followerCount: parseInt(data.followerCount) || 0,
         country: data.country,
         profileImage: imagePreview,
         createdAt: new Date().toISOString(),
@@ -117,8 +112,8 @@ export function AmbassadorAccount() {
       
       localStorage.setItem('ambassadorUser', JSON.stringify(userData));
 
-      // Navigate to business list builder
-      setLocation('/onboarding/ambassador/list-builder');
+      // Navigate to platform/follower selection first
+      setLocation('/onboarding/ambassador');
 
     } catch (error: any) {
       console.error('Signup error:', error);
@@ -222,53 +217,6 @@ export function AmbassadorAccount() {
                   )}
                 />
 
-                {/* Platform Field */}
-                <FormField
-                  control={form.control}
-                  name="platform"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Primary Social Media Platform *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select your main platform" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Instagram">Instagram</SelectItem>
-                          <SelectItem value="TikTok">TikTok</SelectItem>
-                          <SelectItem value="YouTube">YouTube</SelectItem>
-                          <SelectItem value="Facebook">Facebook</SelectItem>
-                          <SelectItem value="Twitter">Twitter/X</SelectItem>
-                          <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Follower Count Field */}
-                <FormField
-                  control={form.control}
-                  name="followerCount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Follower Count *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number"
-                          placeholder="e.g. 10000" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <p className="text-sm text-gray-500">Enter your current follower count on your main platform</p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 {/* Country Field */}
                 <FormField
                   control={form.control}
@@ -283,14 +231,11 @@ export function AmbassadorAccount() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Panama">Panama</SelectItem>
-                          <SelectItem value="Costa Rica">Costa Rica</SelectItem>
-                          <SelectItem value="Mexico">Mexico</SelectItem>
-                          <SelectItem value="Portugal">Portugal</SelectItem>
-                          <SelectItem value="Spain">Spain</SelectItem>
-                          <SelectItem value="UAE">UAE</SelectItem>
-                          <SelectItem value="Thailand">Thailand</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
+                          {COUNTRIES.map((country) => (
+                            <SelectItem key={country} value={country}>
+                              {country}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />

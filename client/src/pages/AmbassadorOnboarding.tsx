@@ -20,8 +20,7 @@ import type { InsertAmbassador, InsertBusiness, Business } from '@shared/schema'
 
 const step1Schema = z.object({
   platform: z.string().min(1, 'Please select a platform'),
-  followerCount: z.number().min(MIN_FOLLOWER_COUNT, `Minimum ${MIN_FOLLOWER_COUNT} followers required`),
-  country: z.string().min(1, 'Please select your country'),
+  followerCount: z.number().min(1, 'Please enter your follower count'),
 });
 
 const step2Schema = z.object({
@@ -54,7 +53,6 @@ export default function AmbassadorOnboarding() {
     defaultValues: {
       platform: '',
       followerCount: 0,
-      country: '',
     },
   });
 
@@ -122,6 +120,18 @@ export default function AmbassadorOnboarding() {
   });
 
   const onStep1Submit = (data: Step1Data) => {
+    // Check follower threshold before proceeding
+    if (data.followerCount < MIN_FOLLOWER_COUNT) {
+      toast({
+        title: 'Thanks for your interest!',
+        description: `Comuniti is currently available to creators with at least ${MIN_FOLLOWER_COUNT.toLocaleString()} followers. You've been added to our waitlist.`,
+        variant: 'destructive',
+      });
+      // Could redirect to waitlist page here
+      setLocation('/');
+      return;
+    }
+    
     setStep1Data(data);
     setCurrentStep(2);
   };
@@ -140,11 +150,14 @@ export default function AmbassadorOnboarding() {
   const onStep3Submit = (data: Step3Data) => {
     if (!step1Data) return;
 
+    // Get user data from localStorage (includes country)
+    const userData = JSON.parse(localStorage.getItem('ambassadorUser') || '{}');
+
     const ambassadorData: InsertAmbassador = {
       name: data.pageName,
       platform: step1Data.platform,
       followerCount: step1Data.followerCount,
-      country: step1Data.country,
+      country: userData.country || '',
       pageName: data.pageName,
       pageUrl: data.pageUrl,
       bio: data.bio || '',
@@ -204,49 +217,24 @@ export default function AmbassadorOnboarding() {
               )}
             />
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <FormField
-                control={form1.control}
-                name="followerCount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Follower Count *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="e.g., 5000"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form1.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your Location *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {COUNTRIES.map((country) => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form1.control}
+              name="followerCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Follower Count *</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="e.g., 5000"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-between pt-6">
               <Button type="button" variant="ghost" onClick={() => setLocation('/')}>
@@ -373,7 +361,7 @@ export default function AmbassadorOnboarding() {
               key={business.id}
               business={{
                 ...business,
-                description: business.description ?? undefined,
+                description: business.description || '',
               }}
               mode="preview"
               onContact={handleContactBusiness}

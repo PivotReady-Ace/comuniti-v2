@@ -11,6 +11,14 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 4, 2025:**
+- **Onboarding Flow Refactored**: Cleaned up ambassador onboarding by moving country selection to account creation step and enforcing follower threshold before progression
+- **Account Creation Enhanced**: /onboarding/ambassador/account now collects email, password, full name, country, and optional profile image
+- **Platform Selection Streamlined**: /onboarding/ambassador now focuses solely on platform and follower count with threshold enforcement
+- **Follower Threshold Implemented**: Configurable minimum follower count (default: 1) blocks progression if not met, showing waitlist message
+- **Data Flow Optimized**: Removed duplicate inputs and ensured all data remains accessible for public directory display
+- **Country Field Relocated**: Moved from platform selection step to account creation for better logical flow
+
+**January 4, 2025 (Earlier):**
 - **Trust Metrics Updated**: Replaced star ratings with "Member since [Month Year]" format using ambassador creation dates
 - **Layout Improvements**: Removed referral numbers and optimized stats grid from 3 to 2 columns for better visual balance
 - **Image Display Fixed**: Resolved ambassador profile photo loading issues by handling both logoUrl and logo_url field names

@@ -47,4 +47,4 @@ export const LANGUAGES = [
   { code: 'pt', name: 'PT', label: 'Português' },
 ] as const;
 
-export const MIN_FOLLOWER_COUNT = 1000;
+export const MIN_FOLLOWER_COUNT = 1;
