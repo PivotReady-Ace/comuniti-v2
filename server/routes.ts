@@ -235,6 +235,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CRITICAL FIX: Add PATCH endpoint for updating ambassadors
+  app.patch("/api/ambassadors/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      
+      console.log(`🔄 Updating ambassador ${id} with data:`, updateData);
+      
+      // Update the ambassador
+      const updatedAmbassador = await storage.updateAmbassador(id, updateData);
+      
+      console.log(`✅ Ambassador ${id} updated successfully:`, {
+        pageName: updatedAmbassador.pageName,
+        pageUrl: updatedAmbassador.pageUrl,
+        bio: updatedAmbassador.bio
+      });
+      
+      res.json(updatedAmbassador);
+    } catch (error: any) {
+      console.error("Error updating ambassador:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ 
+          error: "Invalid data provided", 
+          details: error.errors 
+        });
+      } else {
+        res.status(500).json({ error: "Failed to update ambassador" });
+      }
+    }
+  });
+
   app.get("/api/ambassadors/:pageUrl", async (req, res) => {
     try {
       const { pageUrl } = req.params;

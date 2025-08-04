@@ -44,7 +44,7 @@ export function SignIn() {
 
     try {
       // Sign in via backend authentication endpoint
-      const response = await fetch('/api/auth/signin', {
+      const authResponse = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,9 +55,9 @@ export function SignIn() {
         })
       });
 
-      const result = await response.json();
+      const result = await authResponse.json();
 
-      if (!response.ok) {
+      if (!authResponse.ok) {
         throw new Error(result.error || 'Sign in failed');
       }
 
@@ -66,26 +66,43 @@ export function SignIn() {
       }
 
       console.log('Successfully signed in:', data.email);
-      console.log('🔐 Backend auth result:', result);
       
-      // CRITICAL: Establish frontend Supabase session from backend result
+      // CRITICAL FIX 1: Establish frontend Supabase session from backend result
       if (result.session) {
-        console.log('🔗 Setting frontend Supabase session...');
         const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
           access_token: result.session.access_token,
           refresh_token: result.session.refresh_token
         });
         
         if (sessionError) {
-          console.error('❌ Failed to set frontend session:', sessionError);
+          console.error('Failed to set frontend session:', sessionError);
           throw new Error('Failed to establish session');
         }
         
-        console.log('✅ Frontend session established:', sessionData.session ? 'success' : 'failed');
+        console.log('Frontend session established successfully');
       }
       
-      // Redirect to dashboard
-      setLocation('/dashboard');
+      // Check if user has existing ambassador profile
+      const ambassadorResponse = await fetch('/api/ambassadors');
+      if (ambassadorResponse.ok) {
+        const ambassadors = await ambassadorResponse.json();
+        const userEmail = result.user.email;
+        const existingAmbassador = ambassadors.find((amb: any) => 
+          amb.name.toLowerCase().includes(userEmail?.split('@')[0]?.toLowerCase() || '') ||
+          amb.pageUrl.includes(userEmail?.split('@')[0]?.toLowerCase() || '')
+        );
+        
+        if (existingAmbassador) {
+          // Redirect to their public directory page
+          setLocation(`/directory/${existingAmbassador.pageUrl}`);
+        } else {
+          // No ambassador profile, start onboarding
+          setLocation('/onboarding/ambassador');
+        }
+      } else {
+        // Default to dashboard
+        setLocation('/dashboard');
+      }
 
     } catch (error: any) {
       console.error('Sign in error:', error);

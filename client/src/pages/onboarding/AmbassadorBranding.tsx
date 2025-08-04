@@ -42,18 +42,29 @@ export function AmbassadorBranding() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { onboardingData, userData, isDataLoaded, safeNavigateToNextStep, clearOnboardingData } = useOnboardingState();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [existingAmbassador, setExistingAmbassador] = useState(null);
+  const [existingAmbassador, setExistingAmbassador] = useState<any>(null);
+  const [isLoadingAmbassador, setIsLoadingAmbassador] = useState(false);
 
-  // Check if user is authenticated and has existing ambassador profile
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      listName: '',
+      tagline: '',
+    },
+  });
+
+  // CRITICAL FIX 3: Check authentication and load existing ambassador data
   useEffect(() => {
-    const checkAuthenticatedUser = async () => {
+    const initializePage = async () => {
+      setIsLoadingAmbassador(true);
+      
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          console.log('🔐 Authenticated user detected, checking for existing ambassador...');
+          console.log('Authenticated user detected, checking for existing ambassador profile');
           
-          // Load existing ambassador data for editing
+          // Query ambassadors table for this user's profile
           const response = await fetch('/api/ambassadors');
           if (response.ok) {
             const ambassadors = await response.json();
@@ -64,50 +75,51 @@ export function AmbassadorBranding() {
             );
             
             if (foundAmbassador) {
-              console.log('✅ Existing ambassador found, entering edit mode:', foundAmbassador.pageName);
+              console.log('Existing ambassador found - entering edit mode');
               setIsEditMode(true);
               setExistingAmbassador(foundAmbassador);
               
-              // Populate form with existing data
+              // Pre-fill form with existing data
               form.setValue('listName', foundAmbassador.pageName || '');
               form.setValue('tagline', foundAmbassador.bio || '');
               
-              return; // Skip onboarding safety checks
+              // Load existing profile image if available
+              if (foundAmbassador.logoUrl) {
+                setImagePreview(foundAmbassador.logoUrl);
+              }
+              
+              setIsLoadingAmbassador(false);
+              return; // Skip onboarding safety checks for existing users
             }
           }
         }
         
-        console.log('👤 No authenticated user or existing ambassador, proceeding with onboarding checks');
+        // No authenticated user or no existing profile - run onboarding checks
+        console.log('No authenticated user or existing profile - running onboarding checks');
         
-        // Run normal onboarding safety checks for new users
         if (!isDataLoaded) {
-          console.log('⏳ Branding page: Waiting for onboarding data to load...');
+          console.log('Waiting for onboarding data to load...');
+          setIsLoadingAmbassador(false);
           return;
         }
 
         const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
         if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country || !storedBusinesses) {
-          console.log('⚠️ Branding page: Missing required data, redirecting to correct step');
+          console.log('Missing required onboarding data, redirecting to correct step');
           safeNavigateToNextStep(setLocation);
         } else {
-          console.log('✅ Branding page: All required data present');
+          console.log('All onboarding data present, ready for branding');
         }
         
       } catch (error) {
-        console.error('❌ Error checking authentication status:', error);
+        console.error('Error initializing branding page:', error);
+      } finally {
+        setIsLoadingAmbassador(false);
       }
     };
 
-    checkAuthenticatedUser();
+    initializePage();
   }, [isDataLoaded, onboardingData, userData, safeNavigateToNextStep, setLocation, form]);
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      listName: '',
-      tagline: '',
-    },
-  });
 
   const watchedListName = form.watch('listName');
   const previewSlug = watchedListName ? createSlug(watchedListName) : '';
@@ -146,123 +158,114 @@ export function AmbassadorBranding() {
     setSubmitError(null);
 
     try {
-      // Check Supabase session before submission
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log('🔐 Supabase session before submission:', session ? 'authenticated' : 'no session');
-      // Get current user data from localStorage (from previous onboarding steps)
-      const storedUserData = localStorage.getItem('ambassadorUser');
-      if (!storedUserData) {
-        throw new Error('User data not found. Please go back to the onboarding account step to continue.');
-      }
+      console.log('Submitting branding form:', { editMode: isEditMode, data });
 
-      const userData = JSON.parse(storedUserData);
-      const slug = createSlug(data.listName);
+      let logoUrl = existingAmbassador?.logoUrl || null;
 
-      // Check if slug already exists (basic validation)
-      if (slug.length < 3) {
-        throw new Error('List name must create a valid URL slug (at least 3 characters after processing)');
-      }
-
-      // Handle image upload - convert to base64 for now (MVP approach)
-      let imageUrl = null;
+      // Upload profile image if selected
       if (selectedImage) {
-        try {
-          // For MVP, we'll store image as base64 data URL
-          // This avoids Supabase storage setup complexity
-          const reader = new FileReader();
-          const imageDataPromise = new Promise<string>((resolve, reject) => {
-            reader.onload = (e) => resolve(e.target?.result as string);
-            reader.onerror = reject;
-          });
-          
-          reader.readAsDataURL(selectedImage);
-          imageUrl = await imageDataPromise;
-          
-          console.log('Image processed successfully as base64');
-        } catch (error) {
-          console.error('Image processing error:', error);
-          setSubmitError('Failed to process image. Please try again with a smaller file.');
-          return;
+        console.log('Uploading profile image...');
+        const fileExt = selectedImage.name.split('.').pop();
+        const fileName = `avatar-${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('ambassador-photos')
+          .upload(fileName, selectedImage);
+
+        if (uploadError) {
+          console.error('Image upload error:', uploadError);
+          throw new Error('Failed to upload profile image. Please try again.');
         }
+
+        // Get public URL for uploaded image
+        const { data: { publicUrl } } = supabase.storage
+          .from('ambassador-photos')
+          .getPublicUrl(fileName);
+
+        logoUrl = publicUrl;
+        console.log('Profile image uploaded successfully:', logoUrl);
       }
 
-      // Get business data from previous step
-      const storedBusinessData = localStorage.getItem('ambassadorBusinesses');
-      const businessData = storedBusinessData ? JSON.parse(storedBusinessData) : [];
-
-      // Create ambassador profile for API using correct schema fields
-      const ambassadorData = {
-        name: userData.fullName || userData.email?.split('@')[0] || 'Ambassador',
-        platform: onboardingData?.platforms?.[0] || 'Instagram',
-        followerCount: onboardingData?.followerCount || 0,
-        country: userData.country || '',
-        logoUrl: imageUrl,
-        pageName: data.listName,
-        pageUrl: slug,
-        bio: data.tagline || '',
-      };
-
-      console.log('Creating ambassador profile:', ambassadorData);
-      console.log('Business data to create:', businessData);
-
-      // First create businesses from form data
-      const createdBusinessIds = [];
-      for (const business of businessData) {
-        const businessPayload = {
-          name: business.businessName,
-          category: business.categories.join(', '), // Join multiple categories
-          whatsapp: business.whatsappNumber,
-          location: business.businessAddress || 'Address not provided',
-          description: `Contact: ${business.contactPerson}${business.email ? ` (${business.email})` : ''}`,
+      if (isEditMode && existingAmbassador) {
+        // EDIT MODE: Update existing ambassador
+        const updateData = {
+          pageName: data.listName,
+          pageUrl: createSlug(data.listName),
+          bio: data.tagline || null,
+          logoUrl: logoUrl,
         };
 
-        const businessResponse = await fetch('/api/businesses', {
+        const response = await fetch(`/api/ambassadors/${existingAmbassador.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updateData)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update ambassador profile');
+        }
+
+        const updatedAmbassador = await response.json();
+        console.log('Ambassador profile updated:', updatedAmbassador);
+
+        // Navigate to updated directory page
+        setLocation(`/directory/${updatedAmbassador.pageUrl}`);
+
+      } else {
+        // CREATE MODE: New ambassador (original onboarding flow)
+        const storedUserData = localStorage.getItem('ambassadorUser');
+        if (!storedUserData) {
+          throw new Error('User data not found. Please go back to the onboarding account step to continue.');
+        }
+
+        const userData = JSON.parse(storedUserData);
+
+        // Prepare ambassador data
+        const ambassadorData = {
+          name: userData?.fullName || 'Ambassador',
+          platforms: onboardingData?.platforms || [],
+          followerCount: onboardingData?.followerCount || 1,
+          country: userData?.country || 'Unknown',
+          pageName: data.listName,
+          pageUrl: createSlug(data.listName),
+          bio: data.tagline || null,
+          logoUrl: logoUrl,
+          verified: false
+        };
+
+        // Get stored business data
+        const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
+        const businesses = storedBusinesses ? JSON.parse(storedBusinesses) : [];
+
+        // Create ambassador profile
+        const response = await fetch('/api/ambassadors', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(businessPayload),
+          body: JSON.stringify({
+            ambassador: ambassadorData,
+            businessIds: businesses.map((b: any) => b.id)
+          })
         });
 
-        if (businessResponse.ok) {
-          const createdBusiness = await businessResponse.json();
-          createdBusinessIds.push(createdBusiness.id);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create ambassador profile');
         }
+
+        const createdAmbassador = await response.json();
+        console.log('Ambassador profile created:', createdAmbassador);
+
+        // Clear onboarding data after successful completion
+        clearOnboardingData();
+
+        // Navigate to the ambassador's public directory page
+        setLocation(`/directory/${createdAmbassador.pageUrl}`);
       }
-
-      // Save ambassador to database via API
-      const response = await fetch('/api/ambassadors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ambassador: ambassadorData,
-          businessIds: createdBusinessIds,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create ambassador profile');
-      }
-
-      const createdAmbassador = await response.json();
-      console.log('Ambassador profile created:', createdAmbassador);
-
-      // Extract pageUrl from the created ambassador
-      const pageUrl = createdAmbassador.pageUrl || ambassadorData.pageUrl;
-      console.log('🎯 Redirecting to ambassador directory:', `/directory/${pageUrl}`);
-
-      // Check Supabase session after submission
-      const { data: { session: sessionAfter } } = await supabase.auth.getSession();
-      console.log('🔐 Supabase session after submission:', sessionAfter ? 'authenticated' : 'no session');
-
-      // Clear onboarding data after successful completion
-      clearOnboardingData();
-
-      // Navigate to the ambassador's public directory page
-      setLocation(`/directory/${pageUrl}`);
 
     } catch (error: any) {
       console.error('Branding submission error:', error);

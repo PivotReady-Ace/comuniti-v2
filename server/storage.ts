@@ -31,6 +31,7 @@ export interface IStorage {
   getAmbassador(id: string): Promise<Ambassador | undefined>;
   getAmbassadorByPageUrl(pageUrl: string): Promise<Ambassador | undefined>;
   createAmbassador(ambassador: InsertAmbassador): Promise<Ambassador>;
+  updateAmbassador(id: string, updates: Partial<InsertAmbassador>): Promise<Ambassador>;
   
   // Business operations
   getAllBusinesses(): Promise<Business[]>;
@@ -88,6 +89,23 @@ export class MemStorage implements IStorage {
     };
     this.ambassadors.set(id, ambassador);
     return ambassador;
+  }
+
+  async updateAmbassador(id: string, updates: Partial<InsertAmbassador>): Promise<Ambassador> {
+    const existing = this.ambassadors.get(id);
+    if (!existing) {
+      throw new Error(`Ambassador with id ${id} not found`);
+    }
+    
+    const updated: Ambassador = {
+      ...existing,
+      ...updates,
+      id, // Preserve the original ID
+      createdAt: existing.createdAt, // Preserve creation date
+    };
+    
+    this.ambassadors.set(id, updated);
+    return updated;
   }
 
   // Business operations
@@ -230,6 +248,20 @@ export class DatabaseStorage implements IStorage {
 
   async createAmbassador(insertAmbassador: InsertAmbassador): Promise<Ambassador> {
     const results = await this.db.insert(ambassadors).values(insertAmbassador).returning();
+    return results[0];
+  }
+
+  async updateAmbassador(id: string, updates: Partial<InsertAmbassador>): Promise<Ambassador> {
+    const results = await this.db
+      .update(ambassadors)
+      .set(updates)
+      .where(eq(ambassadors.id, id))
+      .returning();
+    
+    if (results.length === 0) {
+      throw new Error(`Ambassador with id ${id} not found`);
+    }
+    
     return results[0];
   }
 
