@@ -67,6 +67,14 @@ export default function AmbassadorDirectorySimple() {
     return `https://wa.me/${whatsapp}`;
   };
 
+  const formatMemberSince = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -154,11 +162,11 @@ export default function AmbassadorDirectorySimple() {
                   )}
                 </div>
                 
-                {/* Rating Card */}
-                <div className="flex items-center gap-2 bg-green-50 px-4 py-3 rounded-lg border border-green-200">
-                  <Star className="w-5 h-5 fill-green-500 text-green-500" />
-                  <span className="font-semibold text-green-700">4.9</span>
-                  <span className="text-gray-600">(247 reviews)</span>
+                {/* Member Since Card */}
+                <div className="flex items-center gap-2 bg-blue-50 px-4 py-3 rounded-lg border border-blue-200">
+                  <User className="w-5 h-5 text-[#003366]" />
+                  <span className="font-semibold text-[#003366]">Member since</span>
+                  <span className="text-gray-600">{formatMemberSince(ambassador.createdAt)}</span>
                 </div>
               </div>
 
@@ -179,7 +187,7 @@ export default function AmbassadorDirectorySimple() {
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-200">
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <MapPin className="w-5 h-5 text-[#003366]" />
@@ -189,18 +197,21 @@ export default function AmbassadorDirectorySimple() {
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Users className="w-5 h-5 text-[#003366]" />
-                    <span className="font-semibold text-lg">1,200+</span>
-                  </div>
-                  <p className="text-gray-600">{t('ambassador.referrals')}</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
                     <Globe className="w-5 h-5 text-[#003366]" />
                     <span className="font-semibold text-lg">{ambassador.platform}</span>
                   </div>
                   <p className="text-gray-600">({ambassador.followerCount.toLocaleString()} {t('ambassador.followers')})</p>
                 </div>
+                {/* Placeholder for future credibility metrics */}
+                {/* 
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <CheckCircle className="w-5 h-5 text-[#003366]" />
+                    <span className="font-semibold text-lg">Endorses X Trusted Businesses</span>
+                  </div>
+                  <p className="text-gray-600">Badge: Trusted Since 2024</p>
+                </div>
+                */}
               </div>
             </div>
           </div>
