@@ -117,8 +117,13 @@ export function useOnboardingState() {
     localStorage.removeItem('ambassadorBusinesses');
   };
 
-  // Determine next step in onboarding flow
+  // Determine next step in onboarding flow (only call after data is loaded)
   const getNextStep = () => {
+    if (!isDataLoaded) {
+      console.log('⚠️ getNextStep called before data loaded, returning current path');
+      return window.location.pathname;
+    }
+
     console.log('🔍 getNextStep called with:', {
       onboardingData: onboardingData,
       userData: userData,
@@ -145,6 +150,17 @@ export function useOnboardingState() {
     return '/onboarding/ambassador/branding';
   };
 
+  // Safe navigation wrapper that waits for data to load
+  const safeNavigateToNextStep = (setLocation: (path: string) => void) => {
+    if (!isDataLoaded) {
+      console.log('⚠️ Navigation blocked: waiting for data to load');
+      return false;
+    }
+    const nextStep = getNextStep();
+    setLocation(nextStep);
+    return true;
+  };
+
   // Check if onboarding is complete
   const isOnboardingComplete = () => {
     return !!(
@@ -166,6 +182,7 @@ export function useOnboardingState() {
     saveUserData,
     clearOnboardingData,
     getNextStep,
+    safeNavigateToNextStep,
     isOnboardingComplete,
   };
 }

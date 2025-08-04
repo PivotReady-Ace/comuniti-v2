@@ -65,30 +65,27 @@ type FormData = z.infer<typeof formSchema>;
 export function AmbassadorListBuilder() {
   const [, setLocation] = useLocation();
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
-  const { onboardingData, userData, getNextStep, isDataLoaded } = useOnboardingState();
+  const { onboardingData, userData, isDataLoaded, safeNavigateToNextStep } = useOnboardingState();
 
   console.log('🔄 AmbassadorListBuilder component mounted/rendered');
 
   // Safety check: redirect if missing required data (only on list-builder page)
   useEffect(() => {
-    // Wait for data to load before running safety checks
     if (!isDataLoaded) {
-      console.log('⏳ Waiting for onboarding data to load...');
+      console.log('⏳ List builder: Waiting for onboarding data to load...');
       return;
     }
 
     // Only redirect if we're actually on the list-builder page and missing data
     if (window.location.pathname === '/onboarding/ambassador/list-builder') {
       if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country) {
-        console.log('Missing required onboarding data on list-builder, redirecting to correct step');
-        const nextStep = getNextStep();
-        console.log('🔀 NAVIGATION: List builder → ' + nextStep + ' (missing data redirect)');
-        setLocation(nextStep);
+        console.log('⚠️ List builder: Missing required data, redirecting to correct step');
+        safeNavigateToNextStep(setLocation);
       } else {
-        console.log('All required data present on list-builder page');
+        console.log('✅ List builder: All required data present');
       }
     }
-  }, [isDataLoaded, onboardingData, userData, getNextStep, setLocation]);
+  }, [isDataLoaded, onboardingData, userData, safeNavigateToNextStep, setLocation]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -153,6 +150,18 @@ export function AmbassadorListBuilder() {
   const goBack = () => {
     setLocation('/onboarding/ambassador');
   };
+
+  // Show loading while onboarding data loads
+  if (!isDataLoaded) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-[#F1762E]" />
+          <p className="text-gray-600">Loading business directory setup...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 py-8 px-4">

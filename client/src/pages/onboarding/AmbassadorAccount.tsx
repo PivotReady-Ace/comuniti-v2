@@ -38,30 +38,24 @@ export function AmbassadorAccount() {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isOnboardingDataLoaded, setIsOnboardingDataLoaded] = useState(false);
-  const { onboardingData, saveUserData } = useOnboardingState();
+  const { onboardingData, saveUserData, isDataLoaded, safeNavigateToNextStep } = useOnboardingState();
 
   console.log('🔄 AmbassadorAccount component mounted/rendered');
 
-  // Wait for onboardingData to load before making navigation decisions
+  // Safety check: redirect if missing platform data after data loads
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOnboardingDataLoaded(true);
-    }, 500); // Give time for localStorage to load
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Log platform data status for debugging
-  useEffect(() => {
-    if (isOnboardingDataLoaded) {
-      if (!onboardingData?.platforms || !onboardingData?.followerCount) {
-        console.log('Warning: Platform data not found on account page');
-      } else {
-        console.log('Platform data loaded successfully on account page:', onboardingData);
-      }
+    if (!isDataLoaded) {
+      console.log('⏳ Account page: Waiting for onboarding data to load...');
+      return;
     }
-  }, [isOnboardingDataLoaded, onboardingData]);
+
+    if (!onboardingData?.platforms || !onboardingData?.followerCount) {
+      console.log('⚠️ Account page: Missing platform data, redirecting to platform selection');
+      safeNavigateToNextStep(setLocation);
+    } else {
+      console.log('✅ Account page: Platform data loaded successfully:', onboardingData);
+    }
+  }, [isDataLoaded, onboardingData, safeNavigateToNextStep, setLocation]);
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
@@ -174,7 +168,7 @@ export function AmbassadorAccount() {
   };
 
   // Show loading while onboarding data loads
-  if (!isOnboardingDataLoaded) {
+  if (!isDataLoaded) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">

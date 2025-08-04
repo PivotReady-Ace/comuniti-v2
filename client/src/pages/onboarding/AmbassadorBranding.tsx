@@ -37,17 +37,23 @@ export function AmbassadorBranding() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { onboardingData, userData, getNextStep, clearOnboardingData } = useOnboardingState();
+  const { onboardingData, userData, isDataLoaded, safeNavigateToNextStep, clearOnboardingData } = useOnboardingState();
 
   // Safety check: redirect if missing required data
   useEffect(() => {
+    if (!isDataLoaded) {
+      console.log('⏳ Branding page: Waiting for onboarding data to load...');
+      return;
+    }
+
     const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
     if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country || !storedBusinesses) {
-      console.log('Missing required onboarding data, redirecting to correct step');
-      const nextStep = getNextStep();
-      setLocation(nextStep);
+      console.log('⚠️ Branding page: Missing required data, redirecting to correct step');
+      safeNavigateToNextStep(setLocation);
+    } else {
+      console.log('✅ Branding page: All required data present');
     }
-  }, [onboardingData, userData, getNextStep, setLocation]);
+  }, [isDataLoaded, onboardingData, userData, safeNavigateToNextStep, setLocation]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -212,6 +218,18 @@ export function AmbassadorBranding() {
   const goBack = () => {
     setLocation('/onboarding/ambassador/list-builder');
   };
+
+  // Show loading while onboarding data loads
+  if (!isDataLoaded) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-[#F1762E]" />
+          <p className="text-gray-600">Loading branding setup...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white py-8 px-4">
