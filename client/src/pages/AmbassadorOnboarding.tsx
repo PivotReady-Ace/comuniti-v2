@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -48,12 +49,7 @@ export default function AmbassadorOnboarding() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const { toast } = useToast();
 
-  // Debug logging
-  console.log('SOCIAL_PLATFORMS:', SOCIAL_PLATFORMS);
-  console.log('Number of platforms:', SOCIAL_PLATFORMS.length);
-  SOCIAL_PLATFORMS.forEach((platform, index) => {
-    console.log(`Platform ${index + 1}:`, platform.name, platform.id);
-  });
+
 
   const form1 = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
@@ -198,33 +194,29 @@ export default function AmbassadorOnboarding() {
               name="platform"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Social Media Platform *</FormLabel>
+                  <FormLabel>What platform is your primary audience on? *</FormLabel>
                   <FormControl>
-                    <div className="space-y-3">
-                      <div className="text-sm text-gray-500 mb-2">
-                        Debug: Found {SOCIAL_PLATFORMS.length} platforms
-                        <br />
-                        Platforms: {SOCIAL_PLATFORMS.map(p => p.name).join(', ')}
-                      </div>
-                      {SOCIAL_PLATFORMS.map((platform) => {
-                        console.log('Rendering platform:', platform.name);
-                        return (
-                          <Button
-                            key={platform.id}
-                            type="button"
-                            variant={field.value === platform.id ? "default" : "outline"}
-                            className={`w-full flex items-center justify-start p-4 h-auto text-left ${
-                              field.value === platform.id
-                                ? "bg-comuniti-blue text-white"
-                                : "hover:bg-gray-50"
-                            }`}
-                            onClick={() => field.onChange(platform.id)}
+                    <div className="space-y-4">
+                      {SOCIAL_PLATFORMS.map((platform) => (
+                        <div key={platform.id} className="flex items-center space-x-3">
+                          <Checkbox
+                            id={platform.id}
+                            checked={field.value === platform.id}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange(platform.id);
+                              }
+                            }}
+                          />
+                          <Label
+                            htmlFor={platform.id}
+                            className="flex items-center cursor-pointer space-x-3"
                           >
-                            <i className={`${platform.icon} text-2xl mr-3`}></i>
+                            <i className={`${platform.icon} text-xl`}></i>
                             <span className="font-medium">{platform.name}</span>
-                          </Button>
-                        );
-                      })}
+                          </Label>
+                        </div>
+                      ))}
                     </div>
                   </FormControl>
                   <FormMessage />

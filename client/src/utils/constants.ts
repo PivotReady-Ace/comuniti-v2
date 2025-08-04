@@ -9,10 +9,12 @@ export const BRAND_COLORS = {
 } as const;
 
 export const SOCIAL_PLATFORMS = [
-  { id: 'instagram', name: 'Instagram', icon: 'fab fa-instagram', color: 'comuniti-orange' },
-  { id: 'tiktok', name: 'TikTok', icon: 'fab fa-tiktok', color: 'comuniti-cyan' },
   { id: 'youtube', name: 'YouTube', icon: 'fab fa-youtube', color: 'comuniti-teal' },
+  { id: 'instagram', name: 'Instagram', icon: 'fab fa-instagram', color: 'comuniti-orange' },
+  { id: 'facebook', name: 'Facebook', icon: 'fab fa-facebook', color: 'comuniti-blue' },
+  { id: 'tiktok', name: 'TikTok', icon: 'fab fa-tiktok', color: 'comuniti-cyan' },
   { id: 'linkedin', name: 'LinkedIn', icon: 'fab fa-linkedin', color: 'comuniti-blue' },
+  { id: 'other', name: 'Other', icon: 'fas fa-globe', color: 'comuniti-teal' },
 ] as const;
 
 export const BUSINESS_CATEGORIES = [

@@ -11,6 +11,10 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 **January 4, 2025:**
+- **Platform Selection Fixed**: Updated ambassador onboarding with proper checkbox interface including LinkedIn
+- **Platform Options Standardized**: All 6 platforms now available (YouTube, Instagram, Facebook, TikTok, LinkedIn, Other)
+- **LinkedIn Integration Verified**: Successfully tested LinkedIn selection, data persistence, and public profile display
+- **Checkbox UI Implemented**: Changed from buttons to checkboxes with proper question text "What platform is your primary audience on?"
 - **Complete Onboarding Test Validation**: Verified all ambassador directory fields display correctly in public view
 - **Database Logging Enhanced**: Added comprehensive console logging for ambassador creation with field validation
 - **Field Display Confirmed**: All required fields properly shown in directory (name, country, platform, follower count, branding, list name, business links)
