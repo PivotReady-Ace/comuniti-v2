@@ -13,9 +13,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User, ArrowLeft } from 'lucide-react';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
 
+// Base URL constant for consistent domain usage
+const BASE_URL = 'https://comuniti.co';
+
 const formSchema = z.object({
   listName: z.string().min(5, 'List name must be at least 5 characters'),
-  tagline: z.string().min(10, 'Tagline must be at least 10 characters').optional(),
+  tagline: z.string().min(10, 'Tagline must be at least 10 characters').or(z.literal('')).optional(),
   profileImage: z.any().optional(),
 });
 
@@ -209,7 +212,7 @@ export function AmbassadorBranding() {
       console.log('🎯 Redirecting to ambassador directory:', `/directory/${pageUrl}`);
 
       // Check Supabase session after submission
-      const { data: { sessionAfter } } = await supabase.auth.getSession();
+      const { data: { session: sessionAfter } } = await supabase.auth.getSession();
       console.log('🔐 Supabase session after submission:', sessionAfter ? 'authenticated' : 'no session');
 
       // Clear onboarding data after successful completion
@@ -437,7 +440,7 @@ export function AmbassadorBranding() {
                 <div className="mt-4 p-3 bg-[#F1762E]/10 border border-[#F1762E]/20 rounded-lg">
                   <p className="text-sm text-[#F1762E] font-medium">
                     <strong>Your shareable URL:</strong><br />
-                    comuniti.co/directory/{previewSlug}
+                    {BASE_URL}/directory/{previewSlug}
                   </p>
                 </div>
               )}
