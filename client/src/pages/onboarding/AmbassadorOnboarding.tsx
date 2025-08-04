@@ -34,7 +34,9 @@ export function AmbassadorOnboarding() {
   const [, setLocation] = useLocation();
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState(false);
-  const { userData, isCheckingExistingAmbassador, saveOnboardingData } = useOnboardingState();
+  const { userData, isCheckingExistingAmbassador, saveOnboardingData, onboardingData } = useOnboardingState();
+  
+  console.log('🔄 Component render - onboardingData:', onboardingData, 'userData:', userData);
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
@@ -50,6 +52,15 @@ export function AmbassadorOnboarding() {
     },
     mode: 'onChange',
   });
+  
+  // Update form values when onboardingData loads (only once)
+  useEffect(() => {
+    if (onboardingData?.platforms) {
+      console.log('🔄 Updating form with stored onboarding data:', onboardingData);
+      form.setValue('platforms', onboardingData.platforms);
+      form.setValue('followerCount', onboardingData.followerCount || 1000);
+    }
+  }, [onboardingData?.platforms, onboardingData?.followerCount, form]);
 
   const onSubmit = (data: FormData) => {
     console.log('🚀 Ambassador onboarding form submitted:', {
@@ -227,11 +238,16 @@ export function AmbassadorOnboarding() {
                                   <Checkbox
                                     checked={field.value?.includes(platform.id)}
                                     onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...field.value, platform.id])
-                                        : field.onChange(
-                                            field.value?.filter((value) => value !== platform.id)
-                                          );
+                                      console.log(`🔲 ${platform.label} checkbox changed:`, checked, 'current platforms:', field.value);
+                                      const currentPlatforms = field.value || [];
+                                      const newValue = checked
+                                        ? [...currentPlatforms, platform.id]
+                                        : currentPlatforms.filter((value) => value !== platform.id);
+                                      console.log('📝 Setting new platforms value:', newValue);
+                                      field.onChange(newValue);
+                                      
+                                      // Also update the form directly as backup
+                                      form.setValue('platforms', newValue);
                                     }}
                                   />
                                 </FormControl>
