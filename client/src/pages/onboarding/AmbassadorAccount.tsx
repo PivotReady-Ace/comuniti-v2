@@ -50,13 +50,13 @@ export function AmbassadorAccount() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Log platform data status but don't redirect - users may legitimately need to create accounts
+  // Log platform data status for debugging
   useEffect(() => {
     if (isOnboardingDataLoaded) {
       if (!onboardingData?.platforms || !onboardingData?.followerCount) {
-        console.log('Warning: Platform data not found, but allowing account creation to proceed');
+        console.log('Warning: Platform data not found on account page');
       } else {
-        console.log('Platform data loaded successfully:', onboardingData);
+        console.log('Platform data loaded successfully on account page:', onboardingData);
       }
     }
   }, [isOnboardingDataLoaded, onboardingData]);

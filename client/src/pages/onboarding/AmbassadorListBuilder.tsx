@@ -67,12 +67,17 @@ export function AmbassadorListBuilder() {
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
   const { onboardingData, userData, getNextStep } = useOnboardingState();
 
-  // Safety check: redirect if missing required data
+  // Safety check: redirect if missing required data (only on list-builder page)
   useEffect(() => {
-    if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country) {
-      console.log('Missing required onboarding data, redirecting to correct step');
-      const nextStep = getNextStep();
-      setLocation(nextStep);
+    // Only redirect if we're actually on the list-builder page and missing data
+    if (window.location.pathname === '/onboarding/ambassador/list-builder') {
+      if (!onboardingData?.platforms || !userData?.email || !userData?.fullName || !userData?.country) {
+        console.log('Missing required onboarding data on list-builder, redirecting to correct step');
+        const nextStep = getNextStep();
+        setLocation(nextStep);
+      } else {
+        console.log('All required data present on list-builder page');
+      }
     }
   }, [onboardingData, userData, getNextStep, setLocation]);
 
