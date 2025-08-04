@@ -10,7 +10,7 @@ import { Home } from "@/pages/Home";
 import { AmbassadorOnboarding } from "@/pages/onboarding/AmbassadorOnboarding";
 import { AmbassadorAccount } from "@/pages/onboarding/AmbassadorAccount";
 import { AmbassadorListBuilder } from "@/pages/onboarding/AmbassadorListBuilder";
-import { AmbassadorBranding } from "@/pages/onboarding/AmbassadorBranding";
+import { AmbassadorBranding } from "@/pages/onboarding/AmbassadorBrandingFixed";
 import { SignIn } from "@/pages/auth/SignIn";
 import { EmailConfirmation } from "@/pages/auth/EmailConfirmation";
 import Dashboard from "@/pages/dashboard/index";
