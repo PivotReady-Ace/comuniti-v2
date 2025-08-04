@@ -74,9 +74,24 @@ export function useAuth() {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Sign out error:', error);
+      } else {
+        // CRITICAL FIX: Clear ALL localStorage data on logout to prevent data contamination
+        console.log('🧹 Clearing all localStorage data on logout');
+        localStorage.removeItem('supabase_user');
+        localStorage.removeItem('onboardingData');
+        localStorage.removeItem('ambassadorUser');
+        localStorage.removeItem('ambassadorOnboarding');
+        localStorage.removeItem('ambassadorBusinesses');
+        
+        // Clear any user-scoped keys that might exist
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('onboarding_') || key.startsWith('ambassador_') || key.startsWith('user_')) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        console.log('✅ Sign out successful - all user data cleared');
       }
-      // Clear any stored user data
-      localStorage.removeItem('supabase_user');
     } catch (error) {
       console.error('Sign out error:', error);
     }

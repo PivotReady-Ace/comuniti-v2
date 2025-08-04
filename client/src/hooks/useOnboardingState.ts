@@ -19,6 +19,12 @@ interface UserData {
   createdAt?: string;
 }
 
+// Helper function to create user-scoped localStorage keys
+const getUserScopedKey = (baseKey: string, userId?: string): string => {
+  if (!userId) return baseKey; // Fallback to non-scoped key if no user
+  return `${baseKey}_${userId}`;
+};
+
 export function useOnboardingState() {
   const [, setLocation] = useLocation();
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
@@ -26,21 +32,49 @@ export function useOnboardingState() {
   const [isCheckingExistingAmbassador, setIsCheckingExistingAmbassador] = useState(true);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  // Load stored onboarding data on mount
+  // Load stored onboarding data on mount with user scoping
   useEffect(() => {
-    const storedOnboarding = localStorage.getItem('ambassadorOnboarding');
-    const storedUser = localStorage.getItem('ambassadorUser');
-    
-    if (storedOnboarding) {
-      setOnboardingData(JSON.parse(storedOnboarding));
-    }
-    
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-    }
-    
-    // Mark data as loaded after attempting to load from localStorage
-    setIsDataLoaded(true);
+    const loadUserScopedData = async () => {
+      try {
+        // Get current authenticated user
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        
+        console.log('📋 Loading onboarding data for user:', userId || 'anonymous');
+        
+        if (userId) {
+          // Use user-scoped keys
+          const onboardingKey = getUserScopedKey('ambassadorOnboarding', userId);
+          const userKey = getUserScopedKey('ambassadorUser', userId);
+          
+          const storedOnboarding = localStorage.getItem(onboardingKey);
+          const storedUser = localStorage.getItem(userKey);
+          
+          console.log('📦 User-scoped onboarding data found:', !!storedOnboarding);
+          console.log('📦 User-scoped user data found:', !!storedUser);
+          
+          if (storedOnboarding) {
+            setOnboardingData(JSON.parse(storedOnboarding));
+          }
+          
+          if (storedUser) {
+            setUserData(JSON.parse(storedUser));
+          }
+        } else {
+          // No user - don't load any data to prevent contamination
+          console.log('⚠️ No authenticated user - not loading any cached data');
+          setOnboardingData(null);
+          setUserData(null);
+        }
+        
+        setIsDataLoaded(true);
+      } catch (error) {
+        console.error('Error loading user-scoped data:', error);
+        setIsDataLoaded(true);
+      }
+    };
+
+    loadUserScopedData();
   }, []);
 
   // Check if user already has an ambassador profile
@@ -94,27 +128,76 @@ export function useOnboardingState() {
     }
   }, [userData?.fullName, setLocation]);
 
-  // Save onboarding data to localStorage
-  const saveOnboardingData = (data: OnboardingData) => {
-    console.log('💾 Saving onboarding data:', data);
-    setOnboardingData(data);
-    localStorage.setItem('ambassadorOnboarding', JSON.stringify(data));
-    console.log('✅ Onboarding data saved to localStorage');
+  // Save onboarding data to user-scoped localStorage
+  const saveOnboardingData = async (data: OnboardingData) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      
+      console.log('💾 Saving onboarding data for user:', userId, data);
+      setOnboardingData(data);
+      
+      if (userId) {
+        const key = getUserScopedKey('ambassadorOnboarding', userId);
+        localStorage.setItem(key, JSON.stringify(data));
+        console.log('✅ User-scoped onboarding data saved:', key);
+      } else {
+        console.warn('⚠️ No user ID found - onboarding data not persisted');
+      }
+    } catch (error) {
+      console.error('Error saving onboarding data:', error);
+    }
   };
 
-  // Save user data to localStorage
-  const saveUserData = (data: UserData) => {
-    setUserData(data);
-    localStorage.setItem('ambassadorUser', JSON.stringify(data));
+  // Save user data to user-scoped localStorage
+  const saveUserData = async (data: UserData) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      
+      console.log('💾 Saving user data for user:', userId, data);
+      setUserData(data);
+      
+      if (userId) {
+        const key = getUserScopedKey('ambassadorUser', userId);
+        localStorage.setItem(key, JSON.stringify(data));
+        console.log('✅ User-scoped user data saved:', key);
+      } else {
+        console.warn('⚠️ No user ID found - user data not persisted');
+      }
+    } catch (error) {
+      console.error('Error saving user data:', error);
+    }
   };
 
-  // Clear all onboarding data
-  const clearOnboardingData = () => {
-    setOnboardingData(null);
-    setUserData(null);
-    localStorage.removeItem('ambassadorOnboarding');
-    localStorage.removeItem('ambassadorUser');
-    localStorage.removeItem('ambassadorBusinesses');
+  // Clear all onboarding data (user-scoped)
+  const clearOnboardingData = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      
+      console.log('🧹 Clearing onboarding data for user:', userId);
+      setOnboardingData(null);
+      setUserData(null);
+      
+      if (userId) {
+        const onboardingKey = getUserScopedKey('ambassadorOnboarding', userId);
+        const userKey = getUserScopedKey('ambassadorUser', userId);
+        const businessKey = getUserScopedKey('ambassadorBusinesses', userId);
+        
+        localStorage.removeItem(onboardingKey);
+        localStorage.removeItem(userKey);
+        localStorage.removeItem(businessKey);
+        console.log('✅ User-scoped onboarding data cleared');
+      }
+      
+      // Also clear legacy non-scoped keys for cleanup
+      localStorage.removeItem('ambassadorOnboarding');
+      localStorage.removeItem('ambassadorUser');
+      localStorage.removeItem('ambassadorBusinesses');
+    } catch (error) {
+      console.error('Error clearing onboarding data:', error);
+    }
   };
 
   // Determine next step in onboarding flow (only call after data is loaded)
