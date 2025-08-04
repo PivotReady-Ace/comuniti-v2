@@ -43,7 +43,7 @@ const translations = {
     
     // Footer
     'footer.powered-by': 'Powered by',
-    'footer.tagline': 'Connecting expat influencers with trusted service providers worldwide',
+    'footer.tagline': 'Helping expat influencers connect their audiences to trusted local businesses around the world.',
   },
   es: {
     // Navigation
@@ -79,7 +79,7 @@ const translations = {
     
     // Footer
     'footer.powered-by': 'Desarrollado por',
-    'footer.tagline': 'Conectando influencers expatriados con proveedores de servicios confiables en todo el mundo',
+    'footer.tagline': 'Ayudando a influencers expatriados a conectar sus audiencias con negocios locales confiables alrededor del mundo.',
   },
   pt: {
     // Navigation
@@ -115,7 +115,7 @@ const translations = {
     
     // Footer
     'footer.powered-by': 'Desenvolvido por',
-    'footer.tagline': 'Conectando influenciadores expatriados com prestadores de serviços confiáveis em todo o mundo',
+    'footer.tagline': 'Ajudando influenciadores expatriados a conectar suas audiências com negócios locais confiáveis ao redor do mundo.',
   },
 };
 
