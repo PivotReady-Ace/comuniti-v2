@@ -71,33 +71,37 @@ export function AmbassadorOnboarding() {
       formErrors: form.formState.errors
     });
 
-    const minFollowerRequirement = 1; // Very low for MVP
+    const minFollowerRequirement = 1;
 
-    if (data.followerCount >= minFollowerRequirement && data.platforms.length > 0) {
-      // Store data using the onboarding state hook
-      saveOnboardingData({
-        platforms: data.platforms,
-        followerCount: data.followerCount,
-      });
-      
-      console.log('✅ Platform data saved, determining next step...');
-      
-      // Check if user data already exists (account already created)
-      if (userData?.email && userData?.fullName && userData?.country) {
-        console.log('📍 User data exists, skipping to list builder');
-        setLocation('/onboarding/ambassador/list-builder');
-      } else {
-        console.log('📍 No user data, proceeding to account creation');
-        setLocation('/onboarding/ambassador/account');
-      }
+    // Validate form data
+    if (data.platforms.length === 0) {
+      form.setError('platforms', { message: 'Please select at least one platform' });
+      console.log('❌ Validation failed: No platforms selected');
+      return;
+    }
+
+    if (data.followerCount < minFollowerRequirement) {
+      form.setError('followerCount', { message: 'Follower count must be at least 1' });
+      console.log('❌ Validation failed: Follower count too low');
+      setShowEmailPrompt(true);
+      return;
+    }
+
+    // Store data using the onboarding state hook
+    saveOnboardingData({
+      platforms: data.platforms,
+      followerCount: data.followerCount,
+    });
+    
+    console.log('✅ Platform data saved, navigating to next step...');
+    
+    // Check if user data already exists (account already created)
+    if (userData?.email && userData?.fullName && userData?.country) {
+      console.log('📍 User data exists, skipping to list builder');
+      setLocation('/onboarding/ambassador/list-builder');
     } else {
-      console.log('❌ Validation failed - platforms:', data.platforms, 'follower count:', data.followerCount);
-      if (data.platforms.length === 0) {
-        form.setError('platforms', { message: 'Please select at least one platform' });
-      }
-      if (data.followerCount < minFollowerRequirement) {
-        setShowEmailPrompt(true);
-      }
+      console.log('📍 No user data, proceeding to account creation');
+      setLocation('/onboarding/ambassador/account');
     }
   };
 
@@ -299,26 +303,8 @@ export function AmbassadorOnboarding() {
                     Back
                   </Button>
                   <Button 
-                    type="button" 
+                    type="submit" 
                     className="flex-1 bg-[#F1762E] hover:bg-[#F1762E]/90 text-white"
-                    onClick={(e) => {
-                      console.log('🖱️ Continue button clicked');
-                      const formData = form.getValues();
-                      console.log('📋 Current form state:', formData);
-                      console.log('❌ Form errors:', form.formState.errors);
-                      console.log('✅ Form valid:', form.formState.isValid);
-                      
-                      // Manual validation and submission
-                      if (formData.platforms.length > 0 && formData.followerCount >= 1) {
-                        console.log('✅ Manual validation passed, calling onSubmit');
-                        onSubmit(formData);
-                      } else {
-                        console.log('❌ Manual validation failed');
-                        if (formData.platforms.length === 0) {
-                          form.setError('platforms', { message: 'Please select at least one platform' });
-                        }
-                      }
-                    }}
                   >
                     Continue
                   </Button>
