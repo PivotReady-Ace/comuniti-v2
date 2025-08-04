@@ -1,8 +1,8 @@
-# Comuniti Platform
+# Comuniti v2 Platform
 
 ## Overview
 
-Comuniti is a trust-based platform that connects expat influencers (ambassadors) with recommended service providers in global relocation hubs. The platform allows influencers to curate and share lists of trusted local businesses while enabling service providers to gain visibility through verified community recommendations. Built as a full-stack TypeScript application, it features a React frontend with shadcn/ui components and an Express backend with PostgreSQL database integration.
+Comuniti v2 is a trust-based platform that connects expat influencers (ambassadors) with recommended service providers in global relocation hubs. The platform allows influencers to curate and share lists of trusted local businesses while enabling service providers to gain visibility through verified community recommendations. Built as a full-stack TypeScript application, it features a React frontend with shadcn/ui components and an Express backend with PostgreSQL database integration.
 
 ## User Preferences
 
