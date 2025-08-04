@@ -10,6 +10,7 @@ import { AmbassadorAccount } from "@/pages/onboarding/AmbassadorAccount";
 import { AmbassadorListBuilder } from "@/pages/onboarding/AmbassadorListBuilder";
 import { AmbassadorBranding } from "@/pages/onboarding/AmbassadorBranding";
 import { SignIn } from "@/pages/auth/SignIn";
+import { EmailConfirmation } from "@/pages/auth/EmailConfirmation";
 import Dashboard from "@/pages/dashboard/index";
 import AmbassadorDirectorySimple from "@/pages/AmbassadorDirectorySimple";
 import NotFound from "@/pages/not-found";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/onboarding/ambassador/list-builder" component={AmbassadorListBuilder} />
       <Route path="/onboarding/ambassador/branding" component={AmbassadorBranding} />
       <Route path="/auth/sign-in" component={SignIn} />
+      <Route path="/auth/email-confirmation" component={EmailConfirmation} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/directory/:pageUrl" component={AmbassadorDirectorySimple} />
       <Route component={NotFound} />

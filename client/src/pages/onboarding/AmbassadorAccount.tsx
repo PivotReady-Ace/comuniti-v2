@@ -90,11 +90,18 @@ export function AmbassadorAccount() {
         throw new Error(result.error || 'Signup failed');
       }
 
+      console.log('Successfully created account for:', data.email);
+
+      // Check if email confirmation is required
+      if (!result.user.email_confirmed_at && result.user.confirmation_sent_at) {
+        // Navigate to email confirmation page
+        setLocation('/auth/email-confirmation');
+        return;
+      }
+
       if (!result.user) {
         throw new Error('Failed to create user account');
       }
-
-      console.log('Successfully created account for:', data.email);
 
       // Store user data temporarily for the onboarding flow
       const userData = {

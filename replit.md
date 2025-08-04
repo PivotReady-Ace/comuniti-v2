@@ -10,6 +10,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**January 4, 2025:**
+- **Authentication System Fixed**: Resolved complete authentication failure for .marketing email domains
+- **Backend Authentication Proxy**: Implemented server-side authentication endpoints (/api/auth/signup, /api/auth/signin, /api/auth/logout)
+- **Email Confirmation Flow**: Added complete email confirmation system with /auth/email-confirmation page and callback handling
+- **Supabase Integration**: Fixed frontend-backend Supabase connection using backend proxy due to missing VITE_ environment variables
+- **Enhanced Error Handling**: Specific messaging for .marketing domain issues and Supabase configuration guidance
+- **Email Verification**: Users now receive confirmation emails and are guided through the verification process
+- **User Experience**: Seamless redirect flow from signup → email confirmation → onboarding continuation
+
 **January 3, 2025:**
 - **MVP Language Features**: Implemented complete multi-language support (EN/ES/PT) with language selector in upper right of landing and ambassador pages
 - **Social Media Integration**: Added follower count input fields during ambassador onboarding (platform selection, manual follower count input, country/region selection)

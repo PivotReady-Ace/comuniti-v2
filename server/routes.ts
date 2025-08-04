@@ -47,7 +47,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { data, error } = await supabaseServer.auth.signUp({
         email,
         password,
-        options
+        options: {
+          ...options,
+          emailRedirectTo: `${req.protocol}://${req.get('host')}/auth/callback`
+        }
       })
 
       if (error) {
@@ -109,6 +112,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Logout error:", error)
       res.status(500).json({ error: "Logout failed" })
+    }
+  })
+
+  // Email confirmation callback handler
+  app.get("/auth/callback", async (req, res) => {
+    const { token_hash, type } = req.query
+    
+    if (!supabaseServer) {
+      return res.redirect('/?error=auth_service_unavailable')
+    }
+
+    if (type === 'signup' && token_hash) {
+      try {
+        const { error } = await supabaseServer.auth.verifyOtp({
+          token_hash: token_hash as string,
+          type: 'signup'
+        })
+
+        if (error) {
+          console.error('Email verification error:', error)
+          return res.redirect('/?error=verification_failed')
+        }
+
+        console.log('Email verification successful')
+        return res.redirect('/onboarding/ambassador?confirmed=true')
+      } catch (error) {
+        console.error('Email verification error:', error)
+        return res.redirect('/?error=verification_failed')
+      }
+    }
+
+    res.redirect('/')
+  })
+
+  // Resend email confirmation endpoint
+  app.post("/api/auth/resend-confirmation", async (req, res) => {
+    if (!supabaseServer) {
+      return res.status(500).json({ error: "Authentication service not configured" })
+    }
+
+    try {
+      const { email } = req.body
+      
+      console.log(`Resending confirmation email for: ${email}`)
+      
+      const { error } = await supabaseServer.auth.resend({
+        type: 'signup',
+        email: email
+      })
+
+      if (error) {
+        console.error("Resend confirmation error:", error)
+        return res.status(400).json({ error: error.message })
+      }
+
+      console.log(`Confirmation email resent to: ${email}`)
+      res.json({ success: true, message: "Confirmation email sent" })
+    } catch (error) {
+      console.error("Resend confirmation error:", error)
+      res.status(500).json({ error: "Failed to resend confirmation" })
     }
   })
 
