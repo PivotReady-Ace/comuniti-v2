@@ -100,6 +100,9 @@ export function AmbassadorBranding() {
     setSubmitError(null);
 
     try {
+      // Check Supabase session before submission
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('🔐 Supabase session before submission:', session ? 'authenticated' : 'no session');
       // Get current user data from localStorage (from previous onboarding steps)
       const storedUserData = localStorage.getItem('ambassadorUser');
       if (!storedUserData) {
@@ -201,11 +204,19 @@ export function AmbassadorBranding() {
       const createdAmbassador = await response.json();
       console.log('Ambassador profile created:', createdAmbassador);
 
+      // Extract pageUrl from the created ambassador
+      const pageUrl = createdAmbassador.pageUrl || ambassadorData.pageUrl;
+      console.log('🎯 Redirecting to ambassador directory:', `/directory/${pageUrl}`);
+
+      // Check Supabase session after submission
+      const { data: { sessionAfter } } = await supabase.auth.getSession();
+      console.log('🔐 Supabase session after submission:', sessionAfter ? 'authenticated' : 'no session');
+
       // Clear onboarding data after successful completion
       clearOnboardingData();
 
-      // Navigate to the dashboard to see the completed profile
-      setLocation('/dashboard');
+      // Navigate to the ambassador's public directory page
+      setLocation(`/directory/${pageUrl}`);
 
     } catch (error: any) {
       console.error('Branding submission error:', error);
