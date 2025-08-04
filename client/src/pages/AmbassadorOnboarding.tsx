@@ -51,6 +51,9 @@ export default function AmbassadorOnboarding() {
   // Debug logging
   console.log('SOCIAL_PLATFORMS:', SOCIAL_PLATFORMS);
   console.log('Number of platforms:', SOCIAL_PLATFORMS.length);
+  SOCIAL_PLATFORMS.forEach((platform, index) => {
+    console.log(`Platform ${index + 1}:`, platform.name, platform.id);
+  });
 
   const form1 = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
@@ -198,6 +201,11 @@ export default function AmbassadorOnboarding() {
                   <FormLabel>Social Media Platform *</FormLabel>
                   <FormControl>
                     <div className="space-y-3">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Debug: Found {SOCIAL_PLATFORMS.length} platforms
+                        <br />
+                        Platforms: {SOCIAL_PLATFORMS.map(p => p.name).join(', ')}
+                      </div>
                       {SOCIAL_PLATFORMS.map((platform) => {
                         console.log('Rendering platform:', platform.name);
                         return (
