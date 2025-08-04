@@ -115,19 +115,29 @@ export function useOnboardingState() {
 
   // Determine next step in onboarding flow
   const getNextStep = () => {
+    console.log('🔍 getNextStep called with:', {
+      onboardingData: onboardingData,
+      userData: userData,
+      storedBusinesses: localStorage.getItem('ambassadorBusinesses')
+    });
+
     if (!onboardingData?.platforms || !onboardingData?.followerCount) {
+      console.log('➡️ getNextStep: Missing platform data, returning /onboarding/ambassador');
       return '/onboarding/ambassador';
     }
     
     if (!userData?.email || !userData?.fullName || !userData?.country) {
+      console.log('➡️ getNextStep: Missing user data, returning /onboarding/ambassador/account');
       return '/onboarding/ambassador/account';
     }
     
     const storedBusinesses = localStorage.getItem('ambassadorBusinesses');
     if (!storedBusinesses) {
+      console.log('➡️ getNextStep: Missing businesses, returning /onboarding/ambassador/list-builder');
       return '/onboarding/ambassador/list-builder';
     }
     
+    console.log('➡️ getNextStep: All data present, returning /onboarding/ambassador/branding');
     return '/onboarding/ambassador/branding';
   };
 

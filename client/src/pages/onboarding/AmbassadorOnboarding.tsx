@@ -94,6 +94,7 @@ export function AmbassadorOnboarding() {
     });
     
     console.log('✅ Platform data saved, proceeding to account creation');
+    console.log('🔀 NAVIGATION: Platform selection → Account creation');
     setLocation('/onboarding/ambassador/account');
   };
 

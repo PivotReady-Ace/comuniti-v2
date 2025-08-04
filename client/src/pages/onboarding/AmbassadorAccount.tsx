@@ -41,6 +41,8 @@ export function AmbassadorAccount() {
   const [isOnboardingDataLoaded, setIsOnboardingDataLoaded] = useState(false);
   const { onboardingData, saveUserData } = useOnboardingState();
 
+  console.log('🔄 AmbassadorAccount component mounted/rendered');
+
   // Wait for onboardingData to load before making navigation decisions
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -144,6 +146,7 @@ export function AmbassadorAccount() {
       saveUserData(userData);
 
       // Navigate to list builder (platform data already validated on page load)
+      console.log('🔀 NAVIGATION: Account creation → List builder');
       setLocation('/onboarding/ambassador/list-builder');
 
     } catch (error: any) {
