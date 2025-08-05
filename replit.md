@@ -10,16 +10,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**August 5, 2025 (Authentication & Country Dropdown Fixes):**
-- **Critical Authentication Fix**: Resolved premature redirect to sign-in during onboarding branding step
-- **Root Cause**: useAuth hook timing issue - branding component checked user before auth loading completed
-- **Solution**: Modified AmbassadorBrandingFixed.tsx to wait for authLoading state before user validation
-- **Added Loading States**: Enhanced UX with "Checking authentication..." while auth loads
-- **Country Dropdown Regression**: Fixed missing queryFn in useQuery hook that caused empty dropdown
-- **Technical Details**: React Query hook lacked fetch function after recent refactoring
-- **Resolution**: Restored queryFn to fetch from /api/supported-countries endpoint
-- **Database Confirmed**: All 10 curated countries active (Brazil, Colombia, Costa Rica, France, Mexico, Panama, Portugal, Spain, Thailand, United States)
-- **Complete Onboarding Flow**: Platform selection → account creation → list builder → branding → directory now works without redirects
+**August 5, 2025 (LocalStorage Cleanup & State Management):**
+- **Comprehensive LocalStorage Cleanup**: Implemented systematic cleanup of onboarding data after completion and logout
+- **New Utility Module**: Created `/lib/onboardingState.ts` with reusable functions for user-scoped localStorage management
+- **Onboarding Completion Cleanup**: Calls `clearOnboardingStateForUser()` after successful branding completion (both edit and new ambassador modes)
+- **Logout Cleanup Enhancement**: Enhanced logout process to clear user-specific onboarding data before signing out
+- **Form State Isolation**: Updated platform selection page to only pre-fill form data if current user has saved onboarding data
+- **User Scoping Enforcement**: Prevents cross-user data contamination by strictly checking current user ID before loading saved data
+- **Diagnostic Instrumentation**: Added comprehensive localStorage logging throughout onboarding flow for debugging
+- **Expected Behavior**: New users see blank forms, completed onboarding clears state, logout removes all user data
+- **Authentication & Country Dropdown**: Previously resolved authentication timing and missing queryFn issues
+- **Database Confirmed**: All 10 curated countries remain active and accessible
 
 **January 4, 2025 (Navigation Loop Fix):**
 - **Critical Navigation Loop Resolved**: Fixed persistent loop between platform selection and account creation pages

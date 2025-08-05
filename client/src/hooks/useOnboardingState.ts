@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { supabase } from '@/lib/supabase';
+import { loadOnboardingDataForUser } from '@/lib/onboardingState';
 
 interface OnboardingData {
   platforms?: string[];
@@ -40,26 +41,12 @@ export function useOnboardingState() {
         const { data: { session } } = await supabase.auth.getSession();
         const userId = session?.user?.id;
         
-        console.log('📋 Loading onboarding data for user:', userId || 'anonymous');
-        
         if (userId) {
-          // Use user-scoped keys
-          const onboardingKey = getUserScopedKey('ambassadorOnboarding', userId);
-          const userKey = getUserScopedKey('ambassadorUser', userId);
+          // Load data only for the current authenticated user
+          const { onboardingData: loadedOnboardingData, userData: loadedUserData } = loadOnboardingDataForUser(userId);
           
-          const storedOnboarding = localStorage.getItem(onboardingKey);
-          const storedUser = localStorage.getItem(userKey);
-          
-          console.log('📦 User-scoped onboarding data found:', !!storedOnboarding);
-          console.log('📦 User-scoped user data found:', !!storedUser);
-          
-          if (storedOnboarding) {
-            setOnboardingData(JSON.parse(storedOnboarding));
-          }
-          
-          if (storedUser) {
-            setUserData(JSON.parse(storedUser));
-          }
+          setOnboardingData(loadedOnboardingData);
+          setUserData(loadedUserData);
         } else {
           // No user - don't load any data to prevent contamination
           console.log('⚠️ No authenticated user - not loading any cached data');

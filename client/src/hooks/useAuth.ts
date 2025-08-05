@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { clearOnboardingStateForUser } from '@/lib/onboardingState';
 import type { User } from '@supabase/supabase-js';
 
 interface AuthState {
@@ -79,6 +80,15 @@ export function useAuth() {
           return acc;
         }, {} as Record<string, string | null>)
       });
+      
+      // Get current user ID before signing out
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+      
+      // Clear user-specific onboarding state if user exists
+      if (userId) {
+        clearOnboardingStateForUser(userId);
+      }
       
       const { error } = await supabase.auth.signOut();
       if (error) {

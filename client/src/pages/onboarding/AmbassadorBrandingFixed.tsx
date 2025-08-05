@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Upload, User, ArrowLeft } from 'lucide-react';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
 import { useAuth } from '@/hooks/useAuth';
+import { clearOnboardingStateForUser } from '@/lib/onboardingState';
 
 // localStorage diagnostic helper
 const logLocalStorageSnapshot = (step: string) => {
@@ -261,6 +262,11 @@ export function AmbassadorBranding() {
         const { data: { session } } = await supabase.auth.getSession();
         console.log('🔐 Auth state before navigation - User ID:', session?.user?.id, 'Email:', session?.user?.email);
 
+        // Clear onboarding state after successful completion
+        if (user?.id) {
+          clearOnboardingStateForUser(user.id);
+        }
+        
         // Step 4: Log localStorage before redirect to directory
         logLocalStorageSnapshot('Before Directory Redirect (Edit Mode)');
         
@@ -313,8 +319,10 @@ export function AmbassadorBranding() {
         const { data: { session } } = await supabase.auth.getSession();
         console.log('🔐 Auth state before navigation - User ID:', session?.user?.id, 'Email:', session?.user?.email);
 
-        // Clear onboarding data after successful completion
-        await clearOnboardingData();
+        // Clear onboarding state after successful completion
+        if (user?.id) {
+          clearOnboardingStateForUser(user.id);
+        }
 
         // Step 4: Log localStorage before redirect to directory
         logLocalStorageSnapshot('Before Directory Redirect (New Ambassador)');

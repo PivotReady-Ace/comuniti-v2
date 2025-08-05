@@ -12,6 +12,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { SupportedCountry } from '@shared/schema';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
+import { hasOnboardingDataForUser } from '@/lib/onboardingState';
+import { useAuth } from '@/hooks/useAuth';
 
 const formSchema = z.object({
   platforms: z.array(z.string()).min(1, "Please select at least one platform"),
@@ -45,6 +47,7 @@ export function AmbassadorOnboarding() {
   const [, setLocation] = useLocation();
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState(false);
+  const { user } = useAuth();
   const { userData, isCheckingExistingAmbassador, saveOnboardingData, onboardingData } = useOnboardingState();
   
   console.log('🔄 Component render - onboardingData:', onboardingData, 'userData:', userData);
@@ -59,24 +62,34 @@ export function AmbassadorOnboarding() {
     queryKey: ['/api/supported-countries'],
   });
 
+  // Determine if we should pre-fill form based on current user's onboarding data
+  const shouldPreFillForm = user?.id ? hasOnboardingDataForUser(user.id) : false;
+  
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       platforms: [],
-      followerCount: 1000,
+      followerCount: shouldPreFillForm ? 1000 : 1000, // Keep consistent default
       email: '',
     },
     mode: 'onChange',
   });
   
-  // Update form values when onboardingData loads (only once)
+  // Update form values when onboardingData loads (only for current user)
   useEffect(() => {
-    if (onboardingData?.platforms) {
-      console.log('🔄 Updating form with stored onboarding data:', onboardingData);
+    if (user?.id && shouldPreFillForm && onboardingData?.platforms) {
+      console.log('🔄 Updating form with stored onboarding data for current user:', onboardingData);
       form.setValue('platforms', onboardingData.platforms);
       form.setValue('followerCount', onboardingData.followerCount || 1000);
+    } else if (!shouldPreFillForm) {
+      console.log('🧹 No saved data for current user - using blank form');
+      form.reset({
+        platforms: [],
+        followerCount: 1000,
+        email: '',
+      });
     }
-  }, [onboardingData?.platforms, onboardingData?.followerCount, form]);
+  }, [user?.id, shouldPreFillForm, onboardingData?.platforms, onboardingData?.followerCount, form]);
 
   const onSubmit = (data: FormData) => {
     console.log('🚀 Ambassador onboarding form submitted:', {
