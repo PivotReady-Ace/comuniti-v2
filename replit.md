@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**August 5, 2025 (LocalStorage Cleanup & State Management):**
+**August 5, 2025 (LocalStorage Cleanup & Code Organization):**
 - **Comprehensive LocalStorage Cleanup**: Implemented systematic cleanup of onboarding data after completion and logout
 - **New Utility Module**: Created `/lib/onboardingState.ts` with reusable functions for user-scoped localStorage management
 - **Onboarding Completion Cleanup**: Calls `clearOnboardingStateForUser()` after successful branding completion (both edit and new ambassador modes)
@@ -19,6 +19,7 @@ Preferred communication style: Simple, everyday language.
 - **User Scoping Enforcement**: Prevents cross-user data contamination by strictly checking current user ID before loading saved data
 - **Diagnostic Instrumentation**: Added comprehensive localStorage logging throughout onboarding flow for debugging
 - **Expected Behavior**: New users see blank forms, completed onboarding clears state, logout removes all user data
+- **Code Cleanup**: Archived unused AmbassadorDirectory.tsx prototype to `/prototypes` folder, keeping AmbassadorDirectorySimple.tsx as the active directory component
 - **Authentication & Country Dropdown**: Previously resolved authentication timing and missing queryFn issues
 - **Database Confirmed**: All 10 curated countries remain active and accessible
 
