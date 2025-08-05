@@ -38,7 +38,7 @@ export function AmbassadorBranding() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { onboardingData, userData, isDataLoaded, clearOnboardingData } = useOnboardingState();
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingAmbassador, setExistingAmbassador] = useState<any>(null);
@@ -58,8 +58,15 @@ export function AmbassadorBranding() {
       setIsLoadingAmbassador(true);
       
       try {
+        // Wait for auth to complete loading before checking user
+        if (authLoading) {
+          console.log('⏳ Auth still loading, waiting...');
+          setIsLoadingAmbassador(false);
+          return;
+        }
+        
         if (!user) {
-          console.log('⚠️ No authenticated user - redirecting to sign in');
+          console.log('⚠️ Auth completed - No authenticated user found, redirecting to sign in');
           setLocation('/auth/sign-in');
           return;
         }
@@ -144,7 +151,7 @@ export function AmbassadorBranding() {
     };
 
     initializePage();
-  }, [user, isDataLoaded, onboardingData, userData, form, setLocation]);
+  }, [user, authLoading, isDataLoaded, onboardingData, userData, form, setLocation]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -311,7 +318,19 @@ export function AmbassadorBranding() {
     setLocation('/onboarding/ambassador/list-builder');
   };
 
-  // Show loading while checking authentication and ambassador data
+  // Show loading while authentication is still loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-[#F1762E]" />
+          <p className="text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while checking ambassador data
   if (isLoadingAmbassador || !isDataLoaded) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
