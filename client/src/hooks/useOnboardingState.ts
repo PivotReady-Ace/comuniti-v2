@@ -141,6 +141,9 @@ export function useOnboardingState() {
         const key = getUserScopedKey('ambassadorOnboarding', userId);
         localStorage.setItem(key, JSON.stringify(data));
         console.log('✅ User-scoped onboarding data saved:', key);
+        
+        // Diagnostic: Log what was written
+        console.log(`📊 LOCALSTORAGE WRITE [${key}]:`, localStorage.getItem(key));
       } else {
         console.warn('⚠️ No user ID found - onboarding data not persisted');
       }
@@ -162,6 +165,9 @@ export function useOnboardingState() {
         const key = getUserScopedKey('ambassadorUser', userId);
         localStorage.setItem(key, JSON.stringify(data));
         console.log('✅ User-scoped user data saved:', key);
+        
+        // Diagnostic: Log what was written
+        console.log(`📊 LOCALSTORAGE WRITE [${key}]:`, localStorage.getItem(key));
       } else {
         console.warn('⚠️ No user ID found - user data not persisted');
       }

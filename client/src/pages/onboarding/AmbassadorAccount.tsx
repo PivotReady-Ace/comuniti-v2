@@ -16,6 +16,17 @@ import { Loader2, Upload, User } from 'lucide-react';
 import type { SupportedCountry } from '@shared/schema';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
 
+// localStorage diagnostic helper
+const logLocalStorageSnapshot = (step: string) => {
+  console.log(`📊 LOCALSTORAGE SNAPSHOT [${step}]:`, {
+    keys: Object.keys(localStorage),
+    values: Object.keys(localStorage).reduce((acc, key) => {
+      acc[key] = localStorage.getItem(key);
+      return acc;
+    }, {} as Record<string, string | null>)
+  });
+};
+
 const formSchema = z.object({
   email: z.string()
     .min(1, 'Email is required')
@@ -139,6 +150,9 @@ export function AmbassadorAccount() {
       };
       
       saveUserData(userData);
+
+      // Step 3: Log localStorage after account creation
+      logLocalStorageSnapshot('After Account Creation');
 
       // Navigate to list builder (platform data already validated on page load)
       console.log('🔀 NAVIGATION: Account creation → List builder');

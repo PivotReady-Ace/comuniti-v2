@@ -71,6 +71,15 @@ export function useAuth() {
 
   const signOut = async () => {
     try {
+      // Step 5: Log localStorage before logout cleanup
+      console.log(`📊 LOCALSTORAGE SNAPSHOT [Before Logout]:`, {
+        keys: Object.keys(localStorage),
+        values: Object.keys(localStorage).reduce((acc, key) => {
+          acc[key] = localStorage.getItem(key);
+          return acc;
+        }, {} as Record<string, string | null>)
+      });
+      
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Sign out error:', error);
@@ -88,6 +97,15 @@ export function useAuth() {
           if (key.startsWith('onboarding_') || key.startsWith('ambassador_') || key.startsWith('user_')) {
             localStorage.removeItem(key);
           }
+        });
+        
+        // Step 5: Log localStorage after logout cleanup
+        console.log(`📊 LOCALSTORAGE SNAPSHOT [After Logout]:`, {
+          keys: Object.keys(localStorage),
+          values: Object.keys(localStorage).reduce((acc, key) => {
+            acc[key] = localStorage.getItem(key);
+            return acc;
+          }, {} as Record<string, string | null>)
         });
         
         console.log('✅ Sign out successful - all user data cleared');

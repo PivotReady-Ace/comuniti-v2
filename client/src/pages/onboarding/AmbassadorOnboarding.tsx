@@ -30,6 +30,17 @@ const platforms = [
   { id: 'other', label: 'Other' },
 ];
 
+// localStorage diagnostic helper
+const logLocalStorageSnapshot = (step: string) => {
+  console.log(`📊 LOCALSTORAGE SNAPSHOT [${step}]:`, {
+    keys: Object.keys(localStorage),
+    values: Object.keys(localStorage).reduce((acc, key) => {
+      acc[key] = localStorage.getItem(key);
+      return acc;
+    }, {} as Record<string, string | null>)
+  });
+};
+
 export function AmbassadorOnboarding() {
   const [, setLocation] = useLocation();
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
@@ -37,6 +48,11 @@ export function AmbassadorOnboarding() {
   const { userData, isCheckingExistingAmbassador, saveOnboardingData, onboardingData } = useOnboardingState();
   
   console.log('🔄 Component render - onboardingData:', onboardingData, 'userData:', userData);
+  
+  // Step 1: Log localStorage at start of platform selection
+  useEffect(() => {
+    logLocalStorageSnapshot('Platform Selection Start');
+  }, []);
 
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
@@ -92,6 +108,9 @@ export function AmbassadorOnboarding() {
       platforms: data.platforms,
       followerCount: data.followerCount,
     });
+    
+    // Step 2: Log localStorage after platform form submission
+    logLocalStorageSnapshot('After Platform Submit');
     
     console.log('✅ Platform data saved, proceeding to account creation');
     console.log('🔀 NAVIGATION: Platform selection → Account creation');

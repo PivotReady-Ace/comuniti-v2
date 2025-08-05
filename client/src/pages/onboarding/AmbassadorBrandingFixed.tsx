@@ -14,6 +14,17 @@ import { Loader2, Upload, User, ArrowLeft } from 'lucide-react';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
 import { useAuth } from '@/hooks/useAuth';
 
+// localStorage diagnostic helper
+const logLocalStorageSnapshot = (step: string) => {
+  console.log(`📊 LOCALSTORAGE SNAPSHOT [${step}]:`, {
+    keys: Object.keys(localStorage),
+    values: Object.keys(localStorage).reduce((acc, key) => {
+      acc[key] = localStorage.getItem(key);
+      return acc;
+    }, {} as Record<string, string | null>)
+  });
+};
+
 const formSchema = z.object({
   listName: z.string().min(5, 'List name must be at least 5 characters'),
   tagline: z.string().min(10, 'Tagline must be at least 10 characters').or(z.literal('')).optional(),
@@ -250,6 +261,9 @@ export function AmbassadorBranding() {
         const { data: { session } } = await supabase.auth.getSession();
         console.log('🔐 Auth state before navigation - User ID:', session?.user?.id, 'Email:', session?.user?.email);
 
+        // Step 4: Log localStorage before redirect to directory
+        logLocalStorageSnapshot('Before Directory Redirect (Edit Mode)');
+        
         console.log('🔀 NAVIGATION: Profile update → Directory page:', `/directory/${updatedAmbassador.pageUrl}`);
         setLocation(`/directory/${updatedAmbassador.pageUrl}`);
 
@@ -302,6 +316,9 @@ export function AmbassadorBranding() {
         // Clear onboarding data after successful completion
         await clearOnboardingData();
 
+        // Step 4: Log localStorage before redirect to directory
+        logLocalStorageSnapshot('Before Directory Redirect (New Ambassador)');
+        
         console.log('🔀 NAVIGATION: Branding completion → Directory page:', `/directory/${createdAmbassador.pageUrl}`);
         setLocation(`/directory/${createdAmbassador.pageUrl}`);
       }
