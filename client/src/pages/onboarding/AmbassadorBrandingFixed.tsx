@@ -239,6 +239,11 @@ export function AmbassadorBranding() {
         const updatedAmbassador = await response.json();
         console.log('✅ Ambassador profile updated successfully');
 
+        // Debug: Check auth state before navigation
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔐 Auth state before navigation - User ID:', session?.user?.id, 'Email:', session?.user?.email);
+
+        console.log('🔀 NAVIGATION: Profile update → Directory page:', `/directory/${updatedAmbassador.pageUrl}`);
         setLocation(`/directory/${updatedAmbassador.pageUrl}`);
 
       } else {
@@ -283,9 +288,14 @@ export function AmbassadorBranding() {
         const createdAmbassador = await response.json();
         console.log('✅ Ambassador profile created successfully');
 
+        // Debug: Check auth state before navigation
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔐 Auth state before navigation - User ID:', session?.user?.id, 'Email:', session?.user?.email);
+
         // Clear onboarding data after successful completion
         await clearOnboardingData();
 
+        console.log('🔀 NAVIGATION: Branding completion → Directory page:', `/directory/${createdAmbassador.pageUrl}`);
         setLocation(`/directory/${createdAmbassador.pageUrl}`);
       }
 

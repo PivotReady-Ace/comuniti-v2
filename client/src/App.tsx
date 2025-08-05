@@ -24,9 +24,16 @@ function Router() {
   // CRITICAL FIX 2: Auto-redirect logic for authenticated users
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
+      // CRITICAL: Don't interfere with directory pages or onboarding flow
+      if (location.startsWith('/directory/') || location.startsWith('/onboarding/') || location.startsWith('/auth/')) {
+        console.log('🔄 Auto-redirect: Skipping redirect for protected/public page:', location);
+        return;
+      }
+      
       // Check if user has existing ambassador profile to determine redirect
       const checkAmbassadorProfile = async () => {
         try {
+          console.log('🔍 Auto-redirect: Checking ambassador profile for user:', user.email);
           const response = await fetch('/api/ambassadors');
           if (response.ok) {
             const ambassadors = await response.json();
@@ -39,11 +46,13 @@ function Router() {
             if (existingAmbassador) {
               // User has ambassador profile - redirect to directory unless already there
               if (location === '/' || location === '/dashboard') {
+                console.log('🔀 Auto-redirect: User with profile → Directory page');
                 setLocation(`/directory/${existingAmbassador.pageUrl}`);
               }
             } else {
               // User is authenticated but no ambassador profile - redirect to onboarding
               if (location === '/' || location === '/dashboard') {
+                console.log('🔀 Auto-redirect: Authenticated user → Onboarding');
                 setLocation('/onboarding/ambassador');
               }
             }

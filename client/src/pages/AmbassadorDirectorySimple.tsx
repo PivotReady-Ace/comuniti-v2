@@ -1,5 +1,6 @@
 import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,11 @@ interface Business {
 export default function AmbassadorDirectorySimple() {
   const [match, params] = useRoute('/directory/:pageUrl');
   const { t } = useLanguage();
+
+  // Debug: Log component mount and route params
+  useEffect(() => {
+    console.log('🏛️ AmbassadorDirectorySimple mounted - Route match:', match, 'Params:', params);
+  }, [match, params]);
 
   // Use React Query to prevent infinite loops
   const { data: ambassador, isLoading: ambassadorLoading, error: ambassadorError } = useQuery({
