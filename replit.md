@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**August 5, 2025 (LocalStorage Cleanup & Code Organization):**
+**August 5, 2025 (LocalStorage Cleanup, Code Organization & Test Framework):**
 - **Comprehensive LocalStorage Cleanup**: Implemented systematic cleanup of onboarding data after completion and logout
 - **New Utility Module**: Created `/lib/onboardingState.ts` with reusable functions for user-scoped localStorage management
 - **Onboarding Completion Cleanup**: Calls `clearOnboardingStateForUser()` after successful branding completion (both edit and new ambassador modes)
@@ -20,6 +20,9 @@ Preferred communication style: Simple, everyday language.
 - **Diagnostic Instrumentation**: Added comprehensive localStorage logging throughout onboarding flow for debugging
 - **Expected Behavior**: New users see blank forms, completed onboarding clears state, logout removes all user data
 - **Code Cleanup**: Archived unused AmbassadorDirectory.tsx prototype to `/prototypes` folder, keeping AmbassadorDirectorySimple.tsx as the active directory component
+- **E2E Test Framework**: Implemented comprehensive Playwright test suite covering authentication, onboarding, and directory flows (30 test cases A1-A10 across 3 modules)
+- **Test Infrastructure**: Created helper utilities, realistic test data generators, and fixtures for automated regression testing
+- **Test Coverage**: Auth validation, onboarding flow completion, country dropdown verification, business creation, and public directory functionality
 - **Authentication & Country Dropdown**: Previously resolved authentication timing and missing queryFn issues
 - **Database Confirmed**: All 10 curated countries remain active and accessible
 
