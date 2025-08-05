@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp, Plus, Trash2, Loader2 } from 'lucide-react';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
+import { supabase } from '@/lib/supabase';
 
 const businessCategories = [
   'Tour Guide',
@@ -141,9 +142,18 @@ export function AmbassadorListBuilder() {
     });
   };
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     // Store form data for next step (could use context or localStorage)
     localStorage.setItem('ambassadorBusinesses', JSON.stringify(data.businesses));
+    
+    // 1. Log Supabase session immediately after business creation completes
+    const { data: session } = await supabase.auth.getSession();
+    console.log("🔐 POST-BUSINESS CREATION SESSION:", session);
+    console.log("🔐 User ID:", session?.session?.user?.id);
+    console.log("🔐 User Email:", session?.session?.user?.email);
+    console.log("🔐 Session expires at:", session?.session?.expires_at);
+    
+    console.log('🔀 NAVIGATION: List builder → Branding page');
     setLocation('/onboarding/ambassador/branding');
   };
 
