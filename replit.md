@@ -10,13 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**August 5, 2025 (Country Dropdown Investigation):**
-- **Issue Investigated**: Empty country dropdown on /onboarding/ambassador/account resolved
-- **Root Cause Analysis**: Complete system verification performed - database, API, and frontend all functioning correctly
-- **Database Verification**: Confirmed all 10 curated countries present with is_active = true (Brazil, Colombia, Costa Rica, France, Mexico, Panama, Portugal, Spain, Thailand, United States)
-- **API Endpoint Validation**: /api/supported-countries working perfectly, returning countries in alphabetical order
-- **Frontend Integration Confirmed**: React Query successfully fetching and displaying countries data
-- **Resolution**: Issue resolved automatically during investigation - dropdown now displays all countries correctly
+**August 5, 2025 (Authentication & Country Dropdown Fixes):**
+- **Critical Authentication Fix**: Resolved premature redirect to sign-in during onboarding branding step
+- **Root Cause**: useAuth hook timing issue - branding component checked user before auth loading completed
+- **Solution**: Modified AmbassadorBrandingFixed.tsx to wait for authLoading state before user validation
+- **Added Loading States**: Enhanced UX with "Checking authentication..." while auth loads
+- **Country Dropdown Regression**: Fixed missing queryFn in useQuery hook that caused empty dropdown
+- **Technical Details**: React Query hook lacked fetch function after recent refactoring
+- **Resolution**: Restored queryFn to fetch from /api/supported-countries endpoint
+- **Database Confirmed**: All 10 curated countries active (Brazil, Colombia, Costa Rica, France, Mexico, Panama, Portugal, Spain, Thailand, United States)
+- **Complete Onboarding Flow**: Platform selection → account creation → list builder → branding → directory now works without redirects
 
 **January 4, 2025 (Navigation Loop Fix):**
 - **Critical Navigation Loop Resolved**: Fixed persistent loop between platform selection and account creation pages

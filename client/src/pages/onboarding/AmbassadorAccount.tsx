@@ -60,6 +60,7 @@ export function AmbassadorAccount() {
   // Fetch supported countries from API
   const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
     queryKey: ['/api/supported-countries'],
+    queryFn: () => fetch('/api/supported-countries').then(res => res.json()),
   });
 
   const form = useForm<FormData>({
