@@ -58,14 +58,9 @@ export function AmbassadorAccount() {
   }, [isDataLoaded, onboardingData, safeNavigateToNextStep, setLocation]);
 
   // Fetch supported countries from API
-  const { data: countries, isLoading: countriesLoading, error: countriesError } = useQuery<SupportedCountry[]>({
+  const { data: countries, isLoading: countriesLoading } = useQuery<SupportedCountry[]>({
     queryKey: ['/api/supported-countries'],
   });
-
-  // Debug logging for countries
-  useEffect(() => {
-    console.log('🌍 Countries debug - Loading:', countriesLoading, 'Data:', countries, 'Error:', countriesError);
-  }, [countries, countriesLoading, countriesError]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
