@@ -23,6 +23,8 @@ function Router() {
 
   // CRITICAL FIX 2: Auto-redirect logic for authenticated users
   useEffect(() => {
+    console.log('🔍 APP.TSX AUTH GUARD - Location:', location, 'Auth:', isAuthenticated, 'User:', !!user, 'Loading:', loading);
+    
     if (!loading && isAuthenticated && user) {
       // CRITICAL: Don't interfere with directory pages or onboarding flow
       if (location.startsWith('/directory/') || location.startsWith('/onboarding/') || location.startsWith('/auth/')) {
